@@ -1,0 +1,45 @@
+advance web application database
+
+USERS (UserID)
+	- Role (Admin,Customer)
+	- FirstName 
+	- LastName
+	- Address
+	- Email
+	- PhoneNumber
+	- Password
+	- Status (Active, Deactivated)
+USERIMAGE (UserImageID)
+	- UserID
+	- Image (URL)
+ROLE (RoleID)
+	- Category (Admin, Customer)
+STATUS (StatusID)
+	- Category (Active, Deactivated)
+PRODUCT (ProductID)
+	- Category
+	- Name
+	- Description
+	- Price
+	- Stock
+PRODUCTIMAGE (ProductImageID)
+	- ProductID
+	- Image (URL)
+STOCK (StockID)
+	- ProductID
+	- Stocks
+CART (CartID)
+	- UserID
+	- ProductID
+	- Quantity
+ORDERLINE (OrderLineID)
+	- Date
+	- DeliverBy
+ORDERINFO (OrderInfoID)
+	- UserID
+	- ProductID
+	- Quantity
+	- ShipAddress
+ORDERHISTORY (HistoryID)
+	- OrderLineID
+	- OrderInfoID
