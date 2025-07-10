@@ -64,6 +64,10 @@ body{
     border-color: #fff;
 }
 
+.container button:hover {
+    background-color: #83c441;
+}
+
 .container form{
     background-color: #fff;
     display: flex;
@@ -159,8 +163,15 @@ body{
     border-radius: 0 150px 100px 0;
 }
 
+.trademark{
+    width: 50px;
+    margin-top: 5px;
+    display: block;
+    padding: 5px;
+}
+
 .toggle{
-    background-color: #83C441;
+    background-color: #003023;
     height: 100%;
     color: #fff;
     position: relative;
