@@ -41,7 +41,7 @@
       referrerpolicy="no-referrer"
     ></script>
 
-    <script src="js/user.js"></script>
+    <script src="../frontend/js/user.js"></script>
 </head>
 <body>
     <div class="container" id="container">
@@ -104,6 +104,18 @@
             </div>
         </div>
     </div>
-    <script src="../frontend/js/loginregister.js"></script>
+    <script>
+        const container = document.getElementById('container');
+        const registerBtn = document.getElementById('register');
+        const loginBtn = document.getElementById('login');
+
+        registerBtn.addEventListener('click', () => {
+            container.classList.add("active");
+        });
+
+        loginBtn.addEventListener('click', () => {
+            container.classList.remove("active");
+        });
+    </script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    const url = 'http://172.34.98.64:4000/'
+    const url = 'http://localhost:4000/'
 
     const getToken = () => {
         const userId = sessionStorage.getItem('userId');
@@ -10,7 +10,7 @@ $(document).ready(function () {
                 text: 'You must be logged in to access this page.',
                 showConfirmButton: true
             }).then(() => {
-                window.location.href = 'login.html';
+                window.location.href = 'loginregister.html';
             });
             return;
         }
@@ -19,11 +19,13 @@ $(document).ready(function () {
 
     $("#register").on('click', function (e) {
         e.preventDefault();
-        let name = $("#name").val()
+        let firstname = $("#firstname").val()
+        let lastname = $("#lastname").val()
         let email = $("#email").val()
         let password = $("#password").val()
         let user = {
-            name,
+            firstname,
+            lastname,
             email,
             password
         }
@@ -185,8 +187,4 @@ $(document).ready(function () {
             }
         });
     });
-
-    
-
-
 })
