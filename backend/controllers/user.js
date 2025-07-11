@@ -1,39 +1,75 @@
-const connection = require('../config/database.js');
+const connection = require('../config/database');
 const bcrypt = require('bcrypt')
 
 const registerUser = async (req, res) => {
-  // {
-  //   "name": "steve",
-  //   "email": "steve@gmail.com",
-  //   "password": "password"
-  // }
-  const { firstname, lastname, password, email, } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const userSql = 'INSERT INTO users (firstname, lastname, password, email) VALUES (?, ?, ?, ?)';
-  try {
-    connection.execute(userSql, [firstname, lastname, hashedPassword, email], (err, result) => {
-      if (err instanceof Error) {
-        console.log(err);
-
-        return res.status(401).json({
-          error: err
-        });
-      }
-
-      return res.status(200).json({
-        success: true,
-        result
-      })
-    });
-  } catch (error) {
-    console.log(error)
+  const { firstname, lastname, password, email } = req.body;
+  
+  // Validate required fields
+  if (!firstname || !lastname || !password || !email) {
+    return res.status(400).json({ error: "First Name, Last Name, Password, and Email are required." });
   }
 
+  try {
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // SQL query with address and phone number set to null
+    const userSql = `
+      INSERT INTO users (RoleID, FirstName, LastName, Address, Email, PhoneNumber, Password, StatusID)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    
+    // Execute the query
+    connection.execute(
+      userSql,
+      [
+        2, // RoleID for Customer
+        firstname, 
+        lastname, 
+        null, // Address set to null
+        email, 
+        null, // PhoneNumber set to null
+        hashedPassword, 
+        1 // StatusID for Active
+      ],
+      (err, result) => {
+        if (err) {
+          console.error("SQL Error:", err);
+          
+          if (err.code === 'ER_DUP_ENTRY') {
+            return res.status(409).json({ 
+              error: 'Email already exists. Please use a different email address.' 
+            });
+          }
+          
+          // Return more detailed error information
+          return res.status(500).json({ 
+            error: "Database error occurred during registration.",
+            details: err.message || err.sqlMessage || "Unknown error"
+          });
+        }
+        
+        // Success response
+        return res.status(201).json({ 
+          success: true, 
+          message: "User registered successfully",
+          userId: result.insertId 
+        });
+      }
+    );
+  } catch (error) {
+    console.error("Registration Error:", error);
+    return res.status(500).json({ 
+      error: "An error occurred during registration.",
+      details: error.message 
+    });
+  }
 };
 
-const loginUser =  (req, res) => {
+
+const loginUser = (req, res) => {
   const { email, password } = req.body;
-  const sql = 'SELECT id, name, email, password FROM users WHERE email = ? AND deleted_at IS NULL';
+  const sql = 'SELECT UserID, Email, Password FROM users WHERE Email = ?';
   connection.execute(sql, [email], async (err, results) => {
     if (err) {
       console.log(err);
@@ -44,18 +80,27 @@ const loginUser =  (req, res) => {
     }
 
     const user = results[0];
-    
-    const match = await bcrypt.compare(password, user.password);
+
+    const match = await bcrypt.compare(password, user.Password);
     if (!match) {
       return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
     // Remove password from response
-    delete user.password;
+    delete user.Password;
 
+    // Respond with the same structure as registration
     return res.status(200).json({
-      success: "welcome back",
-      user: results[0]
+      success: true,
+      message: "Login successful",
+      user: {
+        userId: user.UserId,
+        firstname: user.FirstName,
+        lastname: user.LastName,
+        email: user.Email,
+        roleId: user.RoleID,
+        statusId: user.StatusID
+      }
     });
   });
 };

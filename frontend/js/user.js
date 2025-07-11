@@ -17,45 +17,114 @@ $(document).ready(function () {
         return true
     }
 
-    $("#register").on('click', function (e) {
-        e.preventDefault();
-        let firstname = $("#firstname").val()
-        let lastname = $("#lastname").val()
-        let email = $("#email").val()
-        let password = $("#password").val()
-        let user = {
-            firstname,
-            lastname,
-            email,
-            password
-        }
-        $.ajax({
-            method: "POST",
-            url: `${url}api/v1/register`,
-            data: JSON.stringify(user),
-            processData: false,
-            contentType: 'application/json; charset=utf-8',
-            dataType: "json",
-            success: function (data) {
-                console.log(data);
-                Swal.fire({
-                    icon: "success",
-                    text: "register success",
-                    position: 'bottom-right'
+    $("#registerForm").on('submit', function (e) {
+    e.preventDefault();
+    
+    // Get form values
+    let firstname = $("#register-firstname").val().trim();
+    let lastname = $("#register-lastname").val().trim();
+    let email = $("#register-email").val().trim();
+    let password = $("#register-password").val();
 
-                });
-            },
-            error: function (error) {
-                console.log(error);
-            }
+    // Basic validation
+    if (!firstname || !lastname || !email || !password) {
+        Swal.fire({
+            icon: "error",
+            text: "Please fill in all required fields.",
+            position: 'top-center'
         });
+        return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        Swal.fire({
+            icon: "error",
+            text: "Please enter a valid email address.",
+            position: 'top-center'
+        });
+        return;
+    }
+    
+    // Password validation (minimum 6 characters)
+    if (password.length < 6) {
+        Swal.fire({
+            icon: "error",
+            text: "Password must be at least 6 characters long.",
+            position: 'top-center'
+        });
+        return;
+    }
+    
+    // Create user object with only required fields
+    let user = {
+        firstname,
+        lastname,
+        email,
+        password
+    };
+    
+    // Show loading state
+    Swal.fire({
+        title: "Registering...",
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
     });
+    
+    // Send AJAX request
+    $.ajax({
+        method: "POST",
+        url: `${url}api/v1/register`,
+        data: JSON.stringify(user),
+        processData: false,
+        contentType: 'application/json; charset=utf-8',
+        dataType: "json",
+        success: function (data) {
+            console.log("Registration successful:", data);
+            Swal.fire({
+                icon: "success",
+                title: "Registration Successful!",
+                text: "Your account has been created successfully.",
+                position: 'top-center'
+            }).then(() => {
+                // Reset form after successful registration
+                $("#registerForm")[0].reset();
+                // Optionally redirect to login page
+                // window.location.href = '/login';
+            });
+        },
+        error: function (xhr) {
+            console.error("Registration error:", xhr);
+            
+            let errorMessage = "Registration failed. Please try again.";
+            
+            if (xhr.responseJSON) {
+                errorMessage = xhr.responseJSON.error || errorMessage;
+                
+                // Handle specific error details
+                if (xhr.responseJSON.details) {
+                    console.error("Error details:", xhr.responseJSON.details);
+                }
+            }
+            
+            Swal.fire({
+                icon: "error",
+                title: "Registration Failed",
+                text: errorMessage,
+                position: 'top-center'
+            });
+        }
+    });
+});
 
-    $("#login").on('click', function (e) {
+    $("#loginForm").on('submit', function (e) {
         e.preventDefault();
 
-        let email = $("#email").val()
-        let password = $("#password").val()
+        let email = $("#login-email").val()
+        let password = $("#login-password").val()
         let user = {
             email,
             password
@@ -70,15 +139,17 @@ $(document).ready(function () {
             success: function (data) {
                 console.log(data);
                 Swal.fire({
-                    text: data.success,
+                    icon: "success",
+                    title: "Login Successful!",
+                    text: data.message,
                     showConfirmButton: false,
-                    position: 'bottom-right',
+                    position: 'top-center',
                     timer: 1000,
                     timerProgressBar: true
-
                 });
-                sessionStorage.setItem('userId', JSON.stringify(data.user.id))
-                window.location.href = 'profile.html'
+                // Store userId from backend response
+                sessionStorage.setItem('userId', data.user.userId);
+                window.location.href = 'landingpage.html';
             },
             error: function (error) {
                 console.log(error);
@@ -86,7 +157,7 @@ $(document).ready(function () {
                     icon: "error",
                     text: error.responseJSON.message,
                     showConfirmButton: false,
-                    position: 'bottom-right',
+                    position: 'top-center',
                     timer: 1000,
                     timerProgressBar: true
 

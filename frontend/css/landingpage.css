@@ -1,0 +1,123 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+header {
+  background: #f8f8f8;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 20px;
+  font-size: 14px;
+  background: #eee;
+}
+
+.main-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.main-header .logo {
+  font-size: 24px;
+  color: #4CAF50;
+}
+
+.main-header input {
+  flex: 1;
+  margin: 0 20px;
+  padding: 10px;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  padding: 10px 20px;
+  background: #4CAF50;
+}
+
+.navbar a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.hero {
+  background: #4CAF50;
+  color: #fff;
+  text-align: center;
+  padding: 100px 20px;
+}
+
+.hero button {
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+  cursor: pointer;
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  padding: 40px 20px;
+  background: #f0f0f0;
+}
+
+.feature-item {
+  text-align: center;
+}
+
+.promotions {
+  display: flex;
+  justify-content: space-around;
+  padding: 40px 20px;
+}
+
+.promo {
+  background: #eee;
+  padding: 40px;
+  text-align: center;
+  flex: 1;
+  margin: 10px;
+}
+
+.daily-deals {
+  padding: 40px 20px;
+}
+
+.products {
+  display: flex;
+  gap: 20px;
+}
+
+.product {
+  background: #f9f9f9;
+  padding: 20px;
+  text-align: center;
+  flex: 1;
+}
+
+.product button {
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+}
+
+.bottom-banner {
+  background: #f1f1f1;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.bottom-banner button {
+  background: #ff9800;
+  color: #fff;
+  border: none;
+  padding: 15px 30px;
+}
