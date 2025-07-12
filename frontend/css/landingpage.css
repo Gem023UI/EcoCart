@@ -1,123 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 header {
-  background: #f8f8f8;
-}
-
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  padding: 5px 20px;
-  font-size: 14px;
-  background: #eee;
-}
-
-.main-header {
+  background-color: #003023;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px;
+  padding: 10px 40px;
+  position: sticky;
 }
 
-.main-header .logo {
-  font-size: 24px;
-  color: #4CAF50;
-}
-
-.main-header input {
-  flex: 1;
-  margin: 0 20px;
-  padding: 10px;
-}
-
-.navbar ul {
-  list-style: none;
+.navbar {
   display: flex;
-  gap: 20px;
-  padding: 10px 20px;
-  background: #4CAF50;
+  align-items: center;
+  width: 100%;
 }
 
-.navbar a {
-  color: #fff;
+.logo-container img {
+  height: 50px;
+  margin-right: 10px;
+}
+
+.search-bar {
+  flex: 1;
+  margin: 0 40px;
+  max-width: 400px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 8px 15px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.nav-link {
+  margin-left: 20px;
   text-decoration: none;
+  color: white;
+  font-weight: 600;
+  transition: color 0.3s ease;
 }
 
-.hero {
-  background: #4CAF50;
-  color: #fff;
-  text-align: center;
-  padding: 100px 20px;
+.nav-link:hover {
+  color: #83c441;
 }
 
-.hero button {
-  background: #ff9800;
-  color: #fff;
+.dropdown {
+  position: relative;
+  display: inline-block;
+  margin-left: 20px;
+  color: white;
+  font-weight: 600;
+}
+
+.dropdown:hover {
+  color: #83c441;
+}
+
+.dropbtn {
+  background: none;
   border: none;
-  padding: 15px 30px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
   cursor: pointer;
 }
 
-.features {
+.dropbtn:hover {
+  color: #83c441;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f6f3f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,2);
+  z-index: 1;
+  border-radius: 10px;
+}
+
+.dropdown-content a {
+  color: #000;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.3s ease;
+  border-radius: 10px;
+}
+
+.dropdown-content a:hover {
+  background-color: #003023;
+  color: #83c441;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+  transition: background-color 0.3s ease;
+}
+
+.icons {
   display: flex;
-  justify-content: space-around;
-  padding: 40px 20px;
-  background: #f0f0f0;
+  align-items: center;
 }
 
-.feature-item {
-  text-align: center;
+.cart-icon, .user-icon {
+  margin-left: 30px;
+  color: white;
+  
 }
 
-.promotions {
-  display: flex;
-  justify-content: space-around;
-  padding: 40px 20px;
+.icons a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  transition: color 0.3s ease;
+  padding-left: 10px;
 }
 
-.promo {
-  background: #eee;
-  padding: 40px;
-  text-align: center;
-  flex: 1;
-  margin: 10px;
+.icons a:hover {
+  color: #83c441;
 }
 
-.daily-deals {
-  padding: 40px 20px;
+.user-dropdown {
+  position: relative;
+  display: inline-block;
 }
 
-.products {
-  display: flex;
-  gap: 20px;
+.user-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f6f3f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0,0,0,2);
+  z-index: 1;
+  border-radius: 10px;
 }
 
-.product {
-  background: #f9f9f9;
-  padding: 20px;
-  text-align: center;
-  flex: 1;
+.user-dropdown-content a {
+  color: #000;
+  padding: 10px 16px;
+  text-decoration: none;
+  display: block;
+  transition: background-color 0.3s ease;
+  border-radius: 10px;
 }
 
-.product button {
-  background: #4CAF50;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
+.user-dropdown-content a:hover {
+  background-color: #003023;
 }
 
-.bottom-banner {
-  background: #f1f1f1;
-  text-align: center;
-  padding: 60px 20px;
+.user-dropdown-content.show {
+  display: block;
 }
 
-.bottom-banner button {
-  background: #ff9800;
-  color: #fff;
-  border: none;
-  padding: 15px 30px;
+.banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.categories {
+  background-color: #7ed957;
 }
