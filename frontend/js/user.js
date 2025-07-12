@@ -144,12 +144,13 @@ $(document).ready(function () {
                     text: data.message,
                     showConfirmButton: false,
                     position: 'top-center',
-                    timer: 1000,
+                    timer: 5000,
                     timerProgressBar: true
                 });
-                // Store userId from backend response
+                // Store userId and token in sessionStorage
                 sessionStorage.setItem('userId', data.user.userId);
-                window.location.href = 'landingpage.html';
+                sessionStorage.setItem('token', data.token);
+                // window.location.href = 'landingpage.html';
             },
             error: function (error) {
                 console.log(error);

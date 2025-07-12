@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken');
 const connection = require('../config/database');
 const bcrypt = require('bcrypt')
 
@@ -69,7 +70,7 @@ const registerUser = async (req, res) => {
 
 const loginUser = (req, res) => {
   const { email, password } = req.body;
-  const sql = 'SELECT UserID, Email, Password FROM users WHERE Email = ?';
+  const sql = 'SELECT UserID, FirstName, LastName, Email, Password, RoleID, StatusID FROM users WHERE Email = ?';
   connection.execute(sql, [email], async (err, results) => {
     if (err) {
       console.log(err);
@@ -89,12 +90,24 @@ const loginUser = (req, res) => {
     // Remove password from response
     delete user.Password;
 
-    // Respond with the same structure as registration
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        userId: user.UserID,
+        email: user.Email,
+        roleId: user.RoleID
+      },
+      process.env.JWT_SECRET || 'your_jwt_secret', // Use env variable in production!
+      { expiresIn: '2h' }
+    );
+
+    // Respond with token and user info
     return res.status(200).json({
       success: true,
       message: "Login successful",
+      token, // <-- JWT token here
       user: {
-        userId: user.UserId,
+        userId: user.UserID,
         firstname: user.FirstName,
         lastname: user.LastName,
         email: user.Email,
