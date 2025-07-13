@@ -119,53 +119,64 @@ $(document).ready(function () {
         }
     });
     });
-    // DONE LOGIN W/ JSON WEB TOKEN FUNCTION
+    // DONE LOGIN W/ JSON WEB TOKEN FUNCTION + ADMIN/CUSTOMER FILTER & REDIRECT
     $("#loginForm").on('submit', function (e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        let email = $("#login-email").val()
-        let password = $("#login-password").val()
-        let user = {
-            email,
-            password
-        }
-        $.ajax({
-            method: "POST",
-            url: `${url}api/v1/login`,
-            data: JSON.stringify(user),
-            processData: false,
-            contentType: 'application/json; charset=utf-8',
-            dataType: "json",
-            success: function (data) {
-                console.log(data);
-                Swal.fire({
-                    icon: "success",
-                    title: "Login Successful!",
-                    text: data.message,
-                    showConfirmButton: false,
-                    position: 'top-center',
-                    timer: 2000,
-                    timerProgressBar: true
-                });
-                // Store userId and token in sessionStorage
-                sessionStorage.setItem('userId', data.user.userId);
-                sessionStorage.setItem('token', data.token);
-                window.location.href = 'landingpage.html';
-            },
-            error: function (error) {
-                console.log(error);
+    let email = $("#login-email").val();
+    let password = $("#login-password").val();
+    let user = {
+        email,
+        password
+    };
+    $.ajax({
+        method: "POST",
+        url: `${url}api/v1/login`,
+        data: JSON.stringify(user),
+        processData: false,
+        contentType: 'application/json; charset=utf-8',
+        dataType: "json",
+        success: function (data) {
+            console.log(data);
+            Swal.fire({
+                icon: "success",
+                title: "Login Successful!",
+                text: data.message,
+                showConfirmButton: false,
+                position: 'top-center',
+                timer: 2000,
+                timerProgressBar: true
+            });
+            // Store userId and token in sessionStorage
+            sessionStorage.setItem('userId', data.user.userId);
+            sessionStorage.setItem('token', data.token);
+
+            // Check user role and redirect accordingly
+            if (data.user.roleId === 2) {
+                window.location.href = 'landingpage.html'; // Customer
+            } else if (data.user.roleId === 1) {
+                window.location.href = 'dashboard.html'; // Admin
+            } else {
                 Swal.fire({
                     icon: "error",
-                    text: error.responseJSON.message,
-                    showConfirmButton: false,
-                    position: 'top-center',
-                    timer: 1000,
-                    timerProgressBar: true
-
+                    text: "Unknown user role.",
+                    position: 'center'
                 });
             }
-        });
+        },
+        error: function (error) {
+            console.log(error);
+            Swal.fire({
+                icon: "error",
+                text: error.responseJSON.message,
+                showConfirmButton: false,
+                position: 'center',
+                timer: 1000,
+                timerProgressBar: true
+            });
+        }
     });
+});
 
     $('#avatar').on('change', function () {
         const file = this.files[0];
