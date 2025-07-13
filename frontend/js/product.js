@@ -13,7 +13,10 @@ $(document).ready(function () {
                     <div class="product-category">${product.category}</div>
                     <div class="product-description">${product.description}</div>
                     <div class="product-price">₱${product.price}</div>
-                    <button class="view-btn" data-id="${product.id}">View</button>
+                    <div class="product-buttons">
+                        <button class="prod-btn">Add to Cart</button>
+                        <button class="prod-btn">Buy Now</button>
+                    </div>
                 </div>
             `;
             $container.append(card);
