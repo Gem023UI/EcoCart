@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 10, 2025 at 09:15 AM
+-- Generation Time: Jul 13, 2025 at 12:03 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -37,6 +37,26 @@ CREATE TABLE `cart` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `category`
+--
+
+CREATE TABLE `category` (
+  `ProdCategoryID` int(11) NOT NULL,
+  `Category` enum('Essentials','Clothing','Cuttlery') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `category`
+--
+
+INSERT INTO `category` (`ProdCategoryID`, `Category`) VALUES
+(1, 'Essentials'),
+(2, 'Clothing'),
+(3, 'Cuttlery');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `product`
 --
 
@@ -46,28 +66,23 @@ CREATE TABLE `product` (
   `Name` varchar(255) DEFAULT NULL,
   `Description` text DEFAULT NULL,
   `Price` decimal(10,2) DEFAULT NULL,
-  `StockID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `productcategory`
---
-
-CREATE TABLE `productcategory` (
-  `ProdCategoryID` int(11) NOT NULL,
-  `Category` enum('Essentials','Clothing','Cuttlery') NOT NULL
+  `Stocks` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `productcategory`
+-- Dumping data for table `product`
 --
 
-INSERT INTO `productcategory` (`ProdCategoryID`, `Category`) VALUES
-(1, 'Essentials'),
-(2, 'Clothing'),
-(3, 'Cuttlery');
+INSERT INTO `product` (`ProductID`, `ProdCategoryID`, `Name`, `Description`, `Price`, `Stocks`) VALUES
+(1, 1, 'Toothpaste', 'Eco-friendly toothpaste.', 2.50, 100),
+(2, 1, 'Soap Bar', 'Organic soap bar.', 1.75, 200),
+(3, 1, 'Reusable Bag', 'Durable shopping bag.', 3.00, 150),
+(4, 2, 'Organic T-Shirt', 'T-shirt made from organic cotton.', 15.00, 50),
+(5, 2, 'Recycled Jeans', 'Jeans made from recycled materials.', 40.00, 40),
+(6, 2, 'Eco Socks', 'Socks made from bamboo fiber.', 5.00, 100),
+(7, 3, 'Bamboo Fork', 'Reusable bamboo fork.', 1.50, 300),
+(8, 3, 'Steel Straw', 'Reusable steel straw.', 2.00, 250),
+(9, 3, 'Reusable Chopsticks', 'Reusable chopsticks set.', 2.50, 200);
 
 -- --------------------------------------------------------
 
@@ -122,18 +137,6 @@ INSERT INTO `status` (`StatusID`, `Category`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `stock`
---
-
-CREATE TABLE `stock` (
-  `StockID` int(11) NOT NULL,
-  `ProductID` int(11) DEFAULT NULL,
-  `Stocks` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `userimage`
 --
 
@@ -155,11 +158,25 @@ CREATE TABLE `users` (
   `FirstName` varchar(100) DEFAULT NULL,
   `LastName` varchar(100) DEFAULT NULL,
   `Address` varchar(255) DEFAULT NULL,
-  `Email` varchar(150) DEFAULT NULL,
+  `Email` varchar(150),
   `PhoneNumber` varchar(20) DEFAULT NULL,
   `Password` varchar(255) DEFAULT NULL,
   `StatusID` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`UserID`, `RoleID`, `FirstName`, `LastName`, `Address`, `Email`, `PhoneNumber`, `Password`, `StatusID`) VALUES
+(27, 2, 'Jemuel', 'Malaga', NULL, 'malagajemuel@gmail.com', NULL, '$2b$10$4pGfVRUlh6EGWP70y2Mwp.Z4XnEgp.HGrpS5Sf9/a5/3ZoZpArVgu', 1),
+(28, 2, 'Venus', 'Page', NULL, 'mayarialunsina@gmail.com', NULL, '$2b$10$Q1Sh3n/HEk5BsrXnW6d.N.kbL852I/m1XPTcftQy9XLIrSiAXD752', 1),
+(29, 2, 'Mary', 'Malaga', NULL, 'mavilovesmary@gmail.com', NULL, '$2b$10$xXiJJESK2hBqUrWyP32yUeYrvRwVx703OYqZtUTPd4wg6b2a1D7hG', 1),
+(30, 2, 'Josefina', 'Alfaro', NULL, 'josefina@gmail.com', NULL, '$2b$10$dj3AcdDlSfsN8qi1ZHt.zegRK./8eLRSxo6U6ndyeoAhdZuIBO5OO', 1),
+(31, 2, 'Ernesto', 'Malaga', NULL, 'ernesto@gmail.com', NULL, '$2b$10$CibF3jN/EKj9VMF0B6qpNOP6IzhNfAUE5zumuI9w1CduSBZK/HnTW', 1),
+(32, 2, 'Test', 'User', NULL, 'testuser@example.com', NULL, '$2b$10$oiaseUJoS0mS/becfhA82.Hd10C5aGcBYzX.LoQiuNTgsevJ6nrX2', 1),
+(33, 2, 'Alvin', 'Yago', NULL, 'alvinsymo@gmail.com', NULL, '$2b$10$1lqG9Kp0DB46y91asAgErOq2uOFW3CN65XbLi5hk3cR3q5epz5eyK', 1),
+(34, 2, 'ewan', 'ewan', NULL, 'ewan@gmail.com', NULL, '$2b$10$P.LDw5WXePCmRouIWEWR9.L6gtlPQe3pe32AFwbQSm2cWwG.KsvVe', 1);
 
 --
 -- Indexes for dumped tables
@@ -174,18 +191,17 @@ ALTER TABLE `cart`
   ADD KEY `ProductID` (`ProductID`);
 
 --
+-- Indexes for table `category`
+--
+ALTER TABLE `category`
+  ADD PRIMARY KEY (`ProdCategoryID`);
+
+--
 -- Indexes for table `product`
 --
 ALTER TABLE `product`
   ADD PRIMARY KEY (`ProductID`),
-  ADD KEY `ProdCategoryID` (`ProdCategoryID`),
-  ADD KEY `StockID` (`StockID`);
-
---
--- Indexes for table `productcategory`
---
-ALTER TABLE `productcategory`
-  ADD PRIMARY KEY (`ProdCategoryID`);
+  ADD KEY `ProdCategoryID` (`ProdCategoryID`);
 
 --
 -- Indexes for table `productimage`
@@ -205,12 +221,6 @@ ALTER TABLE `role`
 --
 ALTER TABLE `status`
   ADD PRIMARY KEY (`StatusID`);
-
---
--- Indexes for table `stock`
---
-ALTER TABLE `stock`
-  ADD PRIMARY KEY (`StockID`);
 
 --
 -- Indexes for table `userimage`
@@ -239,16 +249,16 @@ ALTER TABLE `cart`
   MODIFY `CartID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `category`
+--
+ALTER TABLE `category`
+  MODIFY `ProdCategoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `ProductID` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `productcategory`
---
-ALTER TABLE `productcategory`
-  MODIFY `ProdCategoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `ProductID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `productimage`
@@ -269,12 +279,6 @@ ALTER TABLE `status`
   MODIFY `StatusID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `stock`
---
-ALTER TABLE `stock`
-  MODIFY `StockID` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `userimage`
 --
 ALTER TABLE `userimage`
@@ -284,7 +288,7 @@ ALTER TABLE `userimage`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- Constraints for dumped tables
@@ -301,8 +305,7 @@ ALTER TABLE `cart`
 -- Constraints for table `product`
 --
 ALTER TABLE `product`
-  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`ProdCategoryID`) REFERENCES `productcategory` (`ProdCategoryID`),
-  ADD CONSTRAINT `product_ibfk_2` FOREIGN KEY (`StockID`) REFERENCES `stock` (`StockID`);
+  ADD CONSTRAINT `product_ibfk_1` FOREIGN KEY (`ProdCategoryID`) REFERENCES `category` (`ProdCategoryID`);
 
 --
 -- Constraints for table `productimage`

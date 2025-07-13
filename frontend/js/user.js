@@ -16,7 +16,7 @@ $(document).ready(function () {
         }
         return true
     }
-
+    // DONE REGISTER FUNCTION
     $("#registerForm").on('submit', function (e) {
     e.preventDefault();
     
@@ -118,8 +118,8 @@ $(document).ready(function () {
             });
         }
     });
-});
-
+    });
+    // DONE LOGIN W/ JSON WEB TOKEN FUNCTION
     $("#loginForm").on('submit', function (e) {
         e.preventDefault();
 

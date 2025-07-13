@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const connection = require('../config/database');
 const bcrypt = require('bcrypt')
 
+// DONE REGISTER USER FUNCTION
 const registerUser = async (req, res) => {
   const { firstname, lastname, password, email } = req.body;
   
@@ -67,7 +68,7 @@ const registerUser = async (req, res) => {
   }
 };
 
-
+// DONE LOGIN W/ JSON WEB TOKEN FUNCTION
 const loginUser = (req, res) => {
   const { email, password } = req.body;
   const sql = 'SELECT UserID, FirstName, LastName, Email, Password, RoleID, StatusID FROM users WHERE Email = ?';
