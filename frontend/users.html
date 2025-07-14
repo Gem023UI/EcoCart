@@ -54,9 +54,9 @@
          <div class="dropdown">
           <a class="dropbtn">MANAGEMENT</a>
           <div class="dropdown-content">
-            <a href="./users.html" class="nav-link">USERS</a>
-             <a href="./products.html" class="nav-link">PRODUCTS</a>
-            <a href="./orders.html" class="nav-link">ORDERS</a>
+            <a href="./users.html" class="nav-link">Users</a>
+            <a href="./products.html" class="nav-link">Products</a>
+            <a href="./orders.html" class="nav-link">Orders</a>
           </div>
         </div>
       </nav>
@@ -73,18 +73,18 @@
       </nav>
     </nav>
   </header>
-    <table class="table table-bordered" id="usersTable">
+    <table class="usersTable" id="usersTable">
         <thead>
             <tr>
                 <th>ID</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Address</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th>FIRST NAME</th>
+                <th>LAST NAME</th>
+                <th>ADDRESS</th>
+                <th>EMAIL</th>
+                <th>PHONE</th>
+                <th>ROLE</th>
+                <th>STATUS</th>
+                <th>ACTIONS</th>
             </tr>
         </thead>
         <tbody>
@@ -169,6 +169,24 @@
         </form>
       </div>
     </div>
+
+  <script>
+    // User Options @ Hover
+    const userIcon = document.querySelector('.user-icon');
+    const userDropdownContent = document.querySelector('.user-dropdown-content');
+
+    userIcon.addEventListener('click', (e) => {
+      e.preventDefault();
+      userDropdownContent.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', function(e) {
+      if (!e.target.closest('.user-dropdown')) {
+        userDropdownContent.classList.remove('show');
+      }
+    });
+  </script>
 
 </body>
 </html>

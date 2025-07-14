@@ -71,6 +71,8 @@ header {
   font-size: 16px;
   cursor: pointer;
   color: white;
+  position: relative;
+  display: inline-block;
 }
 
 .dropbtn:hover {
@@ -79,9 +81,10 @@ header {
 
 .dropdown-content {
   display: none;
+  align-items: left;
   position: absolute;
   background-color: #f6f3f9;
-  min-width: 160px;
+  min-width: 50px;
   box-shadow: 0px 8px 16px rgba(0,0,0,2);
   z-index: 1;
   border-radius: 10px;
@@ -114,7 +117,6 @@ header {
 .cart-icon, .user-icon {
   margin-left: 30px;
   color: white;
-  
 }
 
 .icons a {
@@ -160,4 +162,29 @@ header {
 
 .user-dropdown-content.show {
   display: block;
+}
+
+.usersTable {
+  width: 100%;
+  border-collapse: separate;
+  margin-top: 10px;
+  padding: 30px;
+}
+
+.usersTable th {
+  background-color: #83c441;
+  color: white;
+  font-family: Poppins, sans-serif;
+  font-size: 20px;
+  text-align: center;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.usersTable tbody, td {
+  text-align: center;
+  padding: 10px;
+  border: #003023 1px solid;
+  border-radius: 5px;
 }
