@@ -70,6 +70,7 @@ header {
   font-family: 'Poppins', sans-serif;
   font-size: 16px;
   cursor: pointer;
+  color: white;
 }
 
 .dropbtn:hover {

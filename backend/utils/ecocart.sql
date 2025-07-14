@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 13, 2025 at 12:03 PM
+-- Generation Time: Jul 14, 2025 at 02:39 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -161,22 +161,23 @@ CREATE TABLE `users` (
   `Email` varchar(150),
   `PhoneNumber` varchar(20) DEFAULT NULL,
   `Password` varchar(255) DEFAULT NULL,
-  `StatusID` int(11) DEFAULT NULL
+  `StatusID` int(11) DEFAULT NULL,
+  `DeleteDate` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`UserID`, `RoleID`, `FirstName`, `LastName`, `Address`, `Email`, `PhoneNumber`, `Password`, `StatusID`) VALUES
-(27, 2, 'Jemuel', 'Malaga', NULL, 'malagajemuel@gmail.com', NULL, '$2b$10$4pGfVRUlh6EGWP70y2Mwp.Z4XnEgp.HGrpS5Sf9/a5/3ZoZpArVgu', 1),
-(28, 2, 'Venus', 'Page', NULL, 'mayarialunsina@gmail.com', NULL, '$2b$10$Q1Sh3n/HEk5BsrXnW6d.N.kbL852I/m1XPTcftQy9XLIrSiAXD752', 1),
-(29, 2, 'Mary', 'Malaga', NULL, 'mavilovesmary@gmail.com', NULL, '$2b$10$xXiJJESK2hBqUrWyP32yUeYrvRwVx703OYqZtUTPd4wg6b2a1D7hG', 1),
-(30, 2, 'Josefina', 'Alfaro', NULL, 'josefina@gmail.com', NULL, '$2b$10$dj3AcdDlSfsN8qi1ZHt.zegRK./8eLRSxo6U6ndyeoAhdZuIBO5OO', 1),
-(31, 2, 'Ernesto', 'Malaga', NULL, 'ernesto@gmail.com', NULL, '$2b$10$CibF3jN/EKj9VMF0B6qpNOP6IzhNfAUE5zumuI9w1CduSBZK/HnTW', 1),
-(32, 2, 'Test', 'User', NULL, 'testuser@example.com', NULL, '$2b$10$oiaseUJoS0mS/becfhA82.Hd10C5aGcBYzX.LoQiuNTgsevJ6nrX2', 1),
-(33, 2, 'Alvin', 'Yago', NULL, 'alvinsymo@gmail.com', NULL, '$2b$10$1lqG9Kp0DB46y91asAgErOq2uOFW3CN65XbLi5hk3cR3q5epz5eyK', 1),
-(34, 2, 'ewan', 'ewan', NULL, 'ewan@gmail.com', NULL, '$2b$10$P.LDw5WXePCmRouIWEWR9.L6gtlPQe3pe32AFwbQSm2cWwG.KsvVe', 1);
+INSERT INTO `users` (`UserID`, `RoleID`, `FirstName`, `LastName`, `Address`, `Email`, `PhoneNumber`, `Password`, `StatusID`, `DeleteDate`) VALUES
+(27, 1, 'Jemuel', 'Malaga', NULL, 'malagajemuel@gmail.com', NULL, '$2b$10$4pGfVRUlh6EGWP70y2Mwp.Z4XnEgp.HGrpS5Sf9/a5/3ZoZpArVgu', 1, NULL),
+(28, 2, 'Venus', 'Page', NULL, 'mayarialunsina@gmail.com', NULL, '$2b$10$Q1Sh3n/HEk5BsrXnW6d.N.kbL852I/m1XPTcftQy9XLIrSiAXD752', 1, NULL),
+(29, 2, 'Mary', 'Malaga', NULL, 'mavilovesmary@gmail.com', NULL, '$2b$10$xXiJJESK2hBqUrWyP32yUeYrvRwVx703OYqZtUTPd4wg6b2a1D7hG', 1, NULL),
+(30, 2, 'Josefina', 'Alfaro', NULL, 'josefina@gmail.com', NULL, '$2b$10$dj3AcdDlSfsN8qi1ZHt.zegRK./8eLRSxo6U6ndyeoAhdZuIBO5OO', 1, NULL),
+(31, 2, 'Ernesto', 'Malaga', NULL, 'ernesto@gmail.com', NULL, '$2b$10$CibF3jN/EKj9VMF0B6qpNOP6IzhNfAUE5zumuI9w1CduSBZK/HnTW', 1, NULL),
+(32, 2, 'Test', 'User', NULL, 'testuser@example.com', NULL, '$2b$10$oiaseUJoS0mS/becfhA82.Hd10C5aGcBYzX.LoQiuNTgsevJ6nrX2', 1, NULL),
+(33, 2, 'Alvin', 'Yago', NULL, 'alvinsymo@gmail.com', NULL, '$2b$10$1lqG9Kp0DB46y91asAgErOq2uOFW3CN65XbLi5hk3cR3q5epz5eyK', 1, NULL),
+(34, 2, 'ewan', 'ewan', NULL, 'ewan@gmail.com', NULL, '$2b$10$P.LDw5WXePCmRouIWEWR9.L6gtlPQe3pe32AFwbQSm2cWwG.KsvVe', 1, NULL);
 
 --
 -- Indexes for dumped tables
