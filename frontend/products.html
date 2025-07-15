@@ -38,7 +38,7 @@
 
     <script src="../frontend/js/dashboard.js"></script>
 
-    <title>EcoCart - Admin Dashboard</title>
+    <title>EcoCart - Product Management</title>
 </head>
 <body>
   <header>
@@ -63,7 +63,7 @@
       <nav class="icons">
         <a href="#" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i></a>
         <div class="user-dropdown">
-          <a href="#" class="user-icon"><i class="fa-solid fa-circle-user"></i></i></a>
+          <a href="#" class="user-icon"><i class="fa-solid fa-circle-user"></i></a>
           <div class="user-dropdown-content">
             <a href="YOUR_PROFILE_URL_HERE">Profile</a>
             <a href="YOUR_ORDERS_URL_HERE">Orders</a>
@@ -74,6 +74,117 @@
     </nav>
   </header>
   
+  <section class="products-section">
+    <h2>Shop Through Varieties of Eco-Friendly Products</h2>
+    <div id="products-container" class="products-grid"></div>
+  </section>
+
+  <!-- Edit Product Modal -->
+  <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editProductModalLabel">Edit Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="editProductForm" enctype="multipart/form-data">
+          <div class="modal-body">
+            <input type="hidden" id="editProductId">
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="editProductName">Product Name</label>
+                  <input type="text" class="form-control" id="editProductName" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="editProductCategory">Category</label>
+                  <select class="form-control" id="editProductCategory" required>
+                    <option value="">Select Category</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="editProductDescription">Description</label>
+              <textarea class="form-control" id="editProductDescription" rows="3" required></textarea>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="editProductPrice">Price (₱)</label>
+                  <input type="number" class="form-control" id="editProductPrice" step="0.01" min="0" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="editProductStock">Stock</label>
+                  <input type="number" class="form-control" id="editProductStock" min="0" required>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Current Images Section -->
+            <div class="form-group">
+              <label>Current Images</label>
+              <div id="currentImages" class="row">
+                <!-- Current images will be loaded here -->
+              </div>
+            </div>
+            
+            <!-- Upload New Images Section -->
+            <div class="form-group">
+              <label for="editProductImages">Upload New Images</label>
+              <input type="file" class="form-control-file" id="editProductImages" multiple accept="image/*">
+              <small class="form-text text-muted">You can select multiple images. Maximum 5MB per image.</small>
+            </div>
+            
+            <!-- Image Preview Section -->
+            <div class="form-group">
+              <div id="imagePreview" class="row" style="display: none;">
+                <!-- Image previews will be shown here -->
+              </div>
+            </div>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Update Product</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteProductModalLabel">Delete Product</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete this product?</p>
+          <p><strong>Product Name:</strong> <span id="deleteProductName"></span></p>
+          <p class="text-danger"><strong>This action cannot be undone!</strong></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Product</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // User Options @ Hover
     const userIcon = document.querySelector('.user-icon');
@@ -90,6 +201,41 @@
         userDropdownContent.classList.remove('show');
       }
     });
+
+    // Image preview functionality
+    document.getElementById('editProductImages').addEventListener('change', function(e) {
+      const files = e.target.files;
+      const previewContainer = document.getElementById('imagePreview');
+      
+      if (files.length > 0) {
+        previewContainer.style.display = 'block';
+        previewContainer.innerHTML = '';
+        
+        Array.from(files).forEach((file, index) => {
+          if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              const col = document.createElement('div');
+              col.className = 'col-md-3 mb-2';
+              col.innerHTML = `
+                <div class="card">
+                  <img src="${e.target.result}" class="card-img-top" style="height: 100px; object-fit: cover;" alt="Preview">
+                  <div class="card-body p-2">
+                    <small class="text-muted">${file.name}</small>
+                  </div>
+                </div>
+              `;
+              previewContainer.appendChild(col);
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      } else {
+        previewContainer.style.display = 'none';
+      }
+    });
   </script>
+
+  <script src="./js/product.js"></script>
 </body>
 </html>

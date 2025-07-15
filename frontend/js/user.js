@@ -176,7 +176,7 @@ $(document).ready(function () {
             });
         }
     });
-});
+    });
 
     $('#avatar').on('change', function () {
         const file = this.files[0];
