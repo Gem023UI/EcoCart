@@ -14,7 +14,7 @@ const {
     deleteProductImage,
     getAllCategories,
     upload
-} = require('../controllers/dashboard');
+} = require('../controllers/admindashboard');
 
 console.log('Dashboard routes being registered...');
 

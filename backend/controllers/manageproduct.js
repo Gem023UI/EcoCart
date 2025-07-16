@@ -1,227 +1,356 @@
 const connection = require('../config/database');
-const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configure multer for image uploads
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadPath = 'uploads/products/';
-        // Create directory if it doesn't exist
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        cb(null, uploadPath);
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'product-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ 
-    storage: storage,
-    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
-    fileFilter: function (req, file, cb) {
-        const allowedTypes = /jpeg|jpg|png|gif|webp/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype);
-        
-        if (mimetype && extname) {
-            return cb(null, true);
-        } else {
-            cb(new Error('Only image files are allowed'));
-        }
-    }
-});
-
-// DONE GET ALL PRODUCTS WITH IMAGES
-const getAllProducts = (req, res) => {
-    console.log('getAllProducts called'); // Add logging
-    
-    const query = `
+exports.getAllProducts = (req, res) => {
+    // First get all products
+    const productSql = `
         SELECT 
-            p.ProductID AS id,
-            p.Name AS name,
-            c.Category AS category,
-            p.Description AS description,
-            p.Price AS price,
-            p.Stocks AS stocks,
-            GROUP_CONCAT(pi.Image) AS images
-        FROM product p
+            p.*,
+            c.Category
+        FROM product p 
         LEFT JOIN category c ON p.ProdCategoryID = c.ProdCategoryID
-        LEFT JOIN productimage pi ON p.ProductID = pi.ProductID
-        GROUP BY p.ProductID
+        ORDER BY p.ProductID DESC
     `;
     
-    connection.query(query, (err, results) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Database error', details: err });
-        }
-        
-        // Process results to handle images array
-        const processedResults = results.map(product => ({
-            ...product,
-            images: product.images ? product.images.split(',') : []
-        }));
-        
-        console.log('Query results:', processedResults);
-        res.json({ products: processedResults });
-    });
+    try {
+        connection.query(productSql, (err, products, fields) => {
+            if (err instanceof Error) {
+                console.log(err);
+                return res.status(500).json({ error: 'Database error', details: err });
+            }
+
+            if (products.length === 0) {
+                return res.status(200).json({ rows: [] });
+            }
+
+            // Get all images for all products
+            const productIds = products.map(p => p.ProductID);
+            const imagesSql = `
+                SELECT ProductID, ProductImageID, Image 
+                FROM productimage 
+                WHERE ProductID IN (${productIds.map(() => '?').join(',')})
+            `;
+
+            connection.query(imagesSql, productIds, (err, images) => {
+                if (err instanceof Error) {
+                    console.log(err);
+                    return res.status(500).json({ error: 'Database error', details: err });
+                }
+
+                // Group images by ProductID
+                const imagesByProduct = {};
+                images.forEach(image => {
+                    if (!imagesByProduct[image.ProductID]) {
+                        imagesByProduct[image.ProductID] = [];
+                    }
+                    imagesByProduct[image.ProductID].push({
+                        ProductImageID: image.ProductImageID,
+                        Image: image.Image
+                    });
+                });
+
+                // Combine products with their images
+                const processedRows = products.map(product => ({
+                    ...product,
+                    images: imagesByProduct[product.ProductID] || []
+                }));
+
+                return res.status(200).json({
+                    rows: processedRows,
+                });
+            });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: 'Server error', details: error });
+    }
 };
 
-// DONE GET PRODUCT BY ID
-const getProductById = (req, res) => {
-    const productId = req.params.id;
-    console.log('getProductById called for ID:', productId);
+exports.getSingleProduct = (req, res) => {
+    const productId = parseInt(req.params.id);
     
-    const query = `
+    // First get the product
+    const productSql = `
         SELECT 
-            p.ProductID,
-            p.Name,
-            p.Description,
-            p.Price,
-            p.Stocks,
-            p.ProdCategoryID,
-            c.Category AS CategoryName
-        FROM product p
+            p.*,
+            c.Category
+        FROM product p 
         LEFT JOIN category c ON p.ProdCategoryID = c.ProdCategoryID
         WHERE p.ProductID = ?
     `;
     
-    connection.query(query, [productId], (err, results) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Database error', details: err });
-        }
-        
-        if (results.length === 0) {
-            return res.status(404).json({ error: 'Product not found' });
-        }
-        
-        console.log('Product found:', results[0]);
-        res.json(results[0]);
-    });
+    try {
+        connection.execute(productSql, [productId], (err, products, fields) => {
+            if (err instanceof Error) {
+                console.log(err);
+                return res.status(500).json({ error: 'Database error', details: err });
+            }
+
+            if (products.length === 0) {
+                return res.status(404).json({ error: 'Product not found' });
+            }
+
+            // Get images for this product
+            const imagesSql = `
+                SELECT ProductImageID, Image 
+                FROM productimage 
+                WHERE ProductID = ?
+            `;
+
+            connection.execute(imagesSql, [productId], (err, images) => {
+                if (err instanceof Error) {
+                    console.log(err);
+                    return res.status(500).json({ error: 'Database error', details: err });
+                }
+
+                const product = products[0];
+                product.images = images.map(image => ({
+                    ProductImageID: image.ProductImageID,
+                    Image: image.Image
+                }));
+
+                return res.status(200).json({
+                    success: true,
+                    result: [product]
+                });
+            });
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ error: 'Server error', details: error });
+    }
 };
 
-// DONE GET PRODUCT IMAGES BY PRODUCT ID
-const getProductImages = (req, res) => {
-    const productId = req.params.id;
-    console.log('getProductImages called for product ID:', productId);
+exports.createProduct = (req, res) => {
+    console.log('Request body:', req.body);
+    console.log('Files:', req.files);
     
-    const query = `
-        SELECT 
-            ProductImageID,
-            Image
-        FROM productimage
-        WHERE ProductID = ?
-    `;
-    
-    connection.query(query, [productId], (err, results) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Database error', details: err });
-        }
-        
-        console.log('Images found:', results);
-        res.json(results);
-    });
-};
+    // Check if req.body exists
+    if (!req.body) {
+        return res.status(400).json({ error: 'Request body is missing. Check your middleware configuration.' });
+    }
 
-// NEW UPDATE PRODUCT BY ID
-const updateProductById = (req, res) => {
-    const { id } = req.params;
-    const { name, description, price, stocks, categoryId } = req.body;
-    
-    console.log(`Updating product ${id} with data:`, req.body);
-    
-    const sql = 'UPDATE product SET Name = ?, Description = ?, Price = ?, Stocks = ?, ProdCategoryID = ? WHERE ProductID = ?';
-    
-    connection.query(sql, [name, description, price, stocks, categoryId, id], (err, result) => {
+    const { name, description, price, stocks, category } = req.body;
+    const images = req.files || [];
+
+    if (!name || !description || !price || !stocks || !category) {
+        return res.status(400).json({ 
+            error: 'Missing required fields: name, description, price, stocks, category',
+            received: req.body
+        });
+    }
+
+    // Validate price and stocks are numbers
+    if (isNaN(price) || isNaN(stocks)) {
+        return res.status(400).json({ error: 'Price and stocks must be valid numbers' });
+    }
+
+    const sql = 'INSERT INTO product (ProdCategoryID, Name, Description, Price, Stocks) VALUES (?, ?, ?, ?, ?)';
+    const values = [parseInt(category), name, description, parseFloat(price), parseInt(stocks)];
+
+    connection.execute(sql, values, (err, result) => {
         if (err) {
-            console.error('Database error in updateProductById:', err);
-            return res.status(500).json({ 
-                error: 'Database error', 
-                details: err.message 
+            console.log(err);
+            return res.status(500).json({ error: 'Error inserting product', details: err });
+        }
+
+        const productId = result.insertId;
+        console.log('Product ID:', productId);
+
+        // If there are images, insert them into productimage table
+        if (images.length > 0) {
+            const imagePromises = images.map(image => {
+                return new Promise((resolve, reject) => {
+                    // Ensure we're using the original filename
+                    const originalFilename = image.originalname || image.filename;
+                    const relativePath = `assets/products/${originalFilename}`;
+                    const imageSql = 'INSERT INTO productimage (ProductID, Image) VALUES (?, ?)';
+                    const imageValues = [productId, relativePath];
+                    
+                    connection.execute(imageSql, imageValues, (err, result) => {
+                        if (err) {
+                            console.log('Error inserting image:', err);
+                            reject(err);
+                        } else {
+                            resolve(result);
+                        }
+                    });
+                });
+            });
+
+            Promise.all(imagePromises)
+                .then(results => {
+                    return res.status(201).json({
+                        success: true,
+                        productId: productId,
+                        message: 'Product created successfully with images',
+                        imagesUploaded: images.length
+                    });
+                })
+                .catch(error => {
+                    console.log('Error uploading images:', error);
+                    return res.status(500).json({ 
+                        error: 'Product created but failed to upload some images', 
+                        details: error,
+                        productId: productId
+                    });
+                });
+        } else {
+            return res.status(201).json({
+                success: true,
+                productId: productId,
+                message: 'Product created successfully without images'
             });
         }
-        
+    });
+};
+
+exports.updateProduct = (req, res) => {
+    console.log('Update request body:', req.body);
+    console.log('Update files:', req.files);
+
+    const id = parseInt(req.params.id);
+    const { name, description, price, stocks, category } = req.body;
+    const images = req.files || [];
+
+    if (!name || !description || !price || !stocks || !category) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    if (isNaN(price) || isNaN(stocks)) {
+        return res.status(400).json({ error: 'Price and stocks must be valid numbers' });
+    }
+
+    const sql = `
+        UPDATE product 
+        SET ProdCategoryID = ?, Name = ?, Description = ?, Price = ?, Stocks = ? 
+        WHERE ProductID = ?
+    `;
+    const values = [parseInt(category), name, description, parseFloat(price), parseInt(stocks), id];
+
+    connection.execute(sql, values, (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Error updating product', details: err });
+        }
+
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Product not found' });
         }
-        
-        res.json({ success: true, message: 'Product updated successfully' });
-    });
-};
 
-// NEW DELETE PRODUCT BY ID
-const deleteProductById = (req, res) => {
-    const { id } = req.params;
-    console.log(`Deleting product with ID: ${id}`);
-    
-    connection.beginTransaction((err) => {
-        if (err) {
-            console.error('Transaction error:', err);
-            return res.status(500).json({ error: 'Transaction error', details: err.message });
-        }
-        
-        // First, get all images for this product
-        const getImagesQuery = 'SELECT Image FROM productimage WHERE ProductID = ?';
-        connection.query(getImagesQuery, [id], (err, images) => {
-            if (err) {
-                return connection.rollback(() => {
-                    console.error('Error getting images:', err);
-                    res.status(500).json({ error: 'Database error', details: err.message });
-                });
-            }
-            
-            // Delete images from productimage table
-            const deleteImagesQuery = 'DELETE FROM productimage WHERE ProductID = ?';
-            connection.query(deleteImagesQuery, [id], (err) => {
-                if (err) {
-                    return connection.rollback(() => {
-                        console.error('Error deleting images from database:', err);
-                        res.status(500).json({ error: 'Database error', details: err.message });
-                    });
-                }
-                
-                // Delete the product
-                const deleteProductQuery = 'DELETE FROM product WHERE ProductID = ?';
-                connection.query(deleteProductQuery, [id], (err, result) => {
-                    if (err) {
-                        return connection.rollback(() => {
-                            console.error('Error deleting product:', err);
-                            res.status(500).json({ error: 'Database error', details: err.message });
-                        });
-                    }
-                    
-                    if (result.affectedRows === 0) {
-                        return connection.rollback(() => {
-                            res.status(404).json({ error: 'Product not found' });
-                        });
-                    }
-                    
-                    // Commit the transaction
-                    connection.commit((err) => {
+        if (images.length > 0) {
+            const insertPromises = images.map(image => {
+                return new Promise((resolve, reject) => {
+                    // ✅ Use originalname instead of filename
+                    const newFilename = Date.now() + '-' + image.originalname; // prevent conflicts
+                    const relativePath = `assets/products/${image.originalname}`;
+
+                    // Rename the file on disk to match originalname or safe name
+                    const currentPath = image.path;
+                    const newPath = path.join(path.dirname(currentPath), image.originalname);
+
+                    fs.rename(currentPath, newPath, (err) => {
                         if (err) {
-                            return connection.rollback(() => {
-                                console.error('Commit error:', err);
-                                res.status(500).json({ error: 'Transaction error', details: err.message });
-                            });
+                            console.log('Error renaming file:', err);
+                            reject(err);
+                            return;
                         }
-                        
-                        // Delete image files from filesystem
-                        images.forEach(image => {
-                            const imagePath = path.join(__dirname, '..', 'uploads', 'products', image.Image);
-                            fs.unlink(imagePath, (err) => {
-                                if (err) {
-                                    console.error('Error deleting image file:', err);
-                                }
-                            });
+
+                        const insertSql = `
+                            INSERT INTO productimage (ProductID, Image) 
+                            VALUES (?, ?)
+                        `;
+                        connection.execute(insertSql, [id, relativePath], (err, result) => {
+                            if (err) {
+                                console.log('Error inserting updated image:', err);
+                                reject(err);
+                            } else {
+                                resolve(result);
+                            }
                         });
-                        
-                        res.json({ success: true, message: 'Product deleted successfully' });
+                    });
+                });
+            });
+
+            Promise.all(insertPromises)
+                .then(() => {
+                    return res.status(200).json({
+                        success: true,
+                        message: 'Product updated successfully with new images (originalname used)',
+                        imagesAdded: images.length
+                    });
+                })
+                .catch(err => {
+                    console.error(err);
+                    return res.status(500).json({
+                        error: 'Product updated but failed to insert some images',
+                        details: err
+                    });
+                });
+
+        } else {
+            return res.status(200).json({
+                success: true,
+                message: 'Product updated successfully (no new images)'
+            });
+        }
+    });
+};
+
+
+exports.deleteProduct = (req, res) => {
+    const id = req.params.id;
+    
+    // First, get all images for this product to delete files from filesystem
+    const getImagesSql = 'SELECT Image FROM productimage WHERE ProductID = ?';
+    
+    connection.execute(getImagesSql, [parseInt(id)], (err, images) => {
+        if (err) {
+            console.log('Error getting images for deletion:', err);
+            return res.status(500).json({ error: 'Error retrieving product images', details: err });
+        }
+
+        // Delete image files from filesystem
+        const deleteFilePromises = images.map(image => {
+            return new Promise((resolve) => {
+                // Convert relative path to absolute path
+                const imagePath = path.join(__dirname, '../EcoCart/frontend/assets/products', path.basename(image.Image));
+                fs.unlink(imagePath, (err) => {
+                    if (err) {
+                        console.log('Error deleting image file:', err);
+                    }
+                    resolve(); // Always resolve to continue with database deletion
+                });
+            });
+        });
+
+        Promise.all(deleteFilePromises).then(() => {
+            // Delete from productimage table first (foreign key constraint)
+            const deleteImagesSql = 'DELETE FROM productimage WHERE ProductID = ?';
+            
+            connection.execute(deleteImagesSql, [parseInt(id)], (err, result) => {
+                if (err) {
+                    console.log('Error deleting product images:', err);
+                    return res.status(500).json({ error: 'Error deleting product images', details: err });
+                }
+
+                // Then delete from product table
+                const deleteProductSql = 'DELETE FROM product WHERE ProductID = ?';
+                
+                connection.execute(deleteProductSql, [parseInt(id)], (err, result) => {
+                    if (err) {
+                        console.log('Error deleting product:', err);
+                        return res.status(500).json({ error: 'Error deleting product', details: err });
+                    }
+
+                    if (result.affectedRows === 0) {
+                        return res.status(404).json({ error: 'Product not found' });
+                    }
+
+                    return res.status(200).json({
+                        success: true,
+                        message: 'Product and all associated images deleted successfully'
                     });
                 });
             });
@@ -229,103 +358,45 @@ const deleteProductById = (req, res) => {
     });
 };
 
-// NEW UPLOAD PRODUCT IMAGES
-const uploadProductImages = (req, res) => {
-    const productId = req.params.id;
-    const files = req.files;
+exports.deleteProductImage = (req, res) => {
+    const imageId = req.params.imageId;
     
-    console.log(`Uploading images for product ${productId}:`, files);
+    // First, get the image path to delete the file
+    const getImageSql = 'SELECT Image FROM productimage WHERE ProductImageID = ?';
     
-    if (!files || files.length === 0) {
-        return res.status(400).json({ error: 'No files uploaded' });
-    }
-    
-    // Insert image records into database
-    const values = files.map(file => [productId, file.filename]);
-    const sql = 'INSERT INTO productimage (ProductID, Image) VALUES ?';
-    
-    connection.query(sql, [values], (err, result) => {
+    connection.execute(getImageSql, [parseInt(imageId)], (err, result) => {
         if (err) {
-            console.error('Database error in uploadProductImages:', err);
-            // Clean up uploaded files if database insert fails
-            files.forEach(file => {
-                fs.unlink(file.path, (unlinkErr) => {
-                    if (unlinkErr) console.error('Error deleting file:', unlinkErr);
-                });
-            });
-            return res.status(500).json({ error: 'Database error', details: err.message });
+            console.log('Error getting image:', err);
+            return res.status(500).json({ error: 'Error retrieving image', details: err });
         }
-        
-        res.json({ 
-            success: true, 
-            message: 'Images uploaded successfully',
-            uploadedCount: files.length
-        });
-    });
-};
 
-// NEW DELETE PRODUCT IMAGE
-const deleteProductImage = (req, res) => {
-    const { imageId } = req.params;
-    console.log(`Deleting image with ID: ${imageId}`);
-    
-    // First get the image filename
-    const getImageQuery = 'SELECT Image FROM productimage WHERE ProductImageID = ?';
-    connection.query(getImageQuery, [imageId], (err, results) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Database error', details: err.message });
-        }
-        
-        if (results.length === 0) {
+        if (result.length === 0) {
             return res.status(404).json({ error: 'Image not found' });
         }
+
+        // Convert relative path to absolute path
+        const imagePath = path.join(__dirname, '../EcoCart/frontend/assets/products', path.basename(result[0].Image));
         
-        const imageName = results[0].Image;
-        
-        // Delete from database
-        const deleteQuery = 'DELETE FROM productimage WHERE ProductImageID = ?';
-        connection.query(deleteQuery, [imageId], (err, result) => {
+        // Delete the physical file
+        fs.unlink(imagePath, (err) => {
             if (err) {
-                console.error('Database error:', err);
-                return res.status(500).json({ error: 'Database error', details: err.message });
+                console.log('Error deleting image file:', err);
             }
             
-            // Delete file from filesystem
-            const imagePath = path.join(__dirname, '..', 'uploads', 'products', imageName);
-            fs.unlink(imagePath, (err) => {
-                if (err) {
-                    console.error('Error deleting image file:', err);
-                }
-            });
+            // Delete from database regardless of file deletion success
+            const deleteSql = 'DELETE FROM productimage WHERE ProductImageID = ?';
             
-            res.json({ success: true, message: 'Image deleted successfully' });
+            connection.execute(deleteSql, [parseInt(imageId)], (err, result) => {
+                if (err) {
+                    console.log('Error deleting image from database:', err);
+                    return res.status(500).json({ error: 'Error deleting image from database', details: err });
+                }
+
+                return res.status(200).json({
+                    success: true,
+                    message: 'Image deleted successfully'
+                });
+            });
         });
     });
-};
-
-// NEW GET ALL CATEGORIES
-const getAllCategories = (req, res) => {
-    const sql = 'SELECT * FROM category';
-    
-    connection.query(sql, (err, results) => {
-        if (err) {
-            console.error('Database error in getAllCategories:', err);
-            return res.status(500).json({ error: 'Database error', details: err.message });
-        }
-        
-        res.json(results);
-    });
-};
-
-module.exports = {
-    getAllProducts,
-    getProductById,
-    getProductImages,
-    updateProductById,
-    deleteProductById,
-    uploadProductImages,
-    deleteProductImage,
-    getAllCategories,
-    upload
 };
