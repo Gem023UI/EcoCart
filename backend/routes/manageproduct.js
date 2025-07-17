@@ -8,7 +8,7 @@ const productController = require('../controllers/manageproduct');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, '.frontend/assets/products');
+    const uploadDir = path.join(__dirname, '../../frontend/assets/products');
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
