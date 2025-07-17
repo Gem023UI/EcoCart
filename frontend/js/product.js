@@ -200,31 +200,34 @@ $(document).ready(function () {
 
     // Add to Cart button handler
     $(document).on('click', '#addToCartBtn', function(e) {
-        e.preventDefault();
-        
-        if (!window.currentProduct) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Product data not available'
-            });
-            return;
-        }
-        
-        // Check stock availability
-        const stockCount = parseInt(window.currentProduct.Stocks || 0);
-        if (stockCount <= 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Out of Stock',
-                text: 'This product is currently out of stock'
-            });
-            return;
-        }
-        
-        // Add to cart logic here
-        // You can implement this based on your cart system
-        console.log('Adding to cart:', window.currentProduct);
+    e.preventDefault();
+    
+    if (!window.currentProduct) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Product data not available'
+        });
+        return;
+    }
+    
+    // Check stock availability
+    const stockCount = parseInt(window.currentProduct.Stocks || 0);
+    if (stockCount <= 0) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Out of Stock',
+            text: 'This product is currently out of stock'
+        });
+        return;
+    }
+    
+    // Add to cart using CartController
+    const success = CartController.addToCart(window.currentProduct);
+    
+    if (success) {
+        // Update database stock (you'll need an API endpoint for this)
+        updateProductStock(window.currentProduct.ProductID, -1);
         
         Swal.fire({
             icon: 'success',
@@ -236,7 +239,29 @@ $(document).ready(function () {
         
         // Close modal after adding to cart
         $('#productDetailsModal').modal('hide');
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to add item to cart'
+        });
+    }
     });
+
+    // Function to update product stock in database
+    function updateProductStock(productId, quantityChange) {
+        $.ajax({
+            url: `/api/v1/product/${productId}/update-stock`,
+            method: 'PATCH',
+            data: { quantityChange: quantityChange },
+            success: function(response) {
+                console.log('Stock updated successfully');
+            },
+            error: function(xhr, status, error) {
+                console.error('Error updating stock:', error);
+            }
+        });
+    }
 
     // Buy Now button handler
     $(document).on('click', '#buyNowBtn', function(e) {

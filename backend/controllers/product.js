@@ -84,3 +84,27 @@ exports.getProductImages = (req, res) => {
         res.json(results);
     });
 };
+
+exports.updateProductStock = (req, res) => {
+    const productId = req.params.id;
+    const { quantityChange } = req.body;
+
+    const query = `
+        UPDATE product 
+        SET Stocks = Stocks + ? 
+        WHERE ProductID = ?
+    `;
+
+    connection.query(query, [quantityChange, productId], (err, results) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Database error', details: err });
+        }
+        
+        if (results.affectedRows === 0) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        
+        res.json({ success: true });
+    });
+};
