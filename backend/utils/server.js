@@ -11,7 +11,7 @@ const userRoutes = require('../routes/user');
 const productRoutes = require('../routes/product');
 const manageUserRoutes = require('../routes/manageuser');
 const manageProductRoutes = require('../routes/manageproduct');
-const cartRoutes = require('../routes/cart');
+const adminRoutes = require('../routes/dashboard');
 
 // Import controllers directly if needed
 const productController = require('../controllers/manageproduct');
@@ -46,6 +46,7 @@ app.use('/api/v1', userRoutes);
 app.use('/api/v1', productRoutes);
 app.use('/api/v1', manageUserRoutes);
 app.use('/api/v1', manageProductRoutes);
+app.use('/api/v1', adminRoutes);
 
 // ✅ ✅ Add this new direct route to handle productImage uploads
 app.post('/api/v1/productImage/', upload.array('images'), productController.createProduct);

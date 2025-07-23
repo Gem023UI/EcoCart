@@ -1,6 +1,26 @@
 $(document).ready(function () {
     const apiUrl = 'http://localhost:4000/api/v1/product';
 
+    // Add shared cart functions if they don't exist globally
+    const getCart = () => {
+        try {
+            let cart = sessionStorage.getItem('cart');
+            return cart ? JSON.parse(cart) : [];
+        } catch (error) {
+            console.error('Error parsing cart from sessionStorage:', error);
+            return [];
+        }
+    }
+
+    const saveCart = (cart) => {
+        try {
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+            console.log('Cart saved:', cart); // Debug log
+        } catch (error) {
+            console.error('Error saving cart to sessionStorage:', error);
+        }
+    }
+
     // DONE GET ALL PRODUCTS
     function renderProducts(products) {
         const $container = $('#products-container');
@@ -15,7 +35,7 @@ $(document).ready(function () {
                     <div class="product-description">${product.description}</div>
                     <div class="product-price">₱${product.price}</div>
                     <div class="product-buttons">
-                        <button class="prod-btn view-btn" data-id="${product.id}">VIEW</button>
+                        <button class="prod-btn view-btn" data-id="${product.ID || product.id}">VIEW</button>
                     </div>
                 </div>
             `;
@@ -198,71 +218,6 @@ $(document).ready(function () {
             });
     });
 
-    // Add to Cart button handler
-    $(document).on('click', '#addToCartBtn', function(e) {
-    e.preventDefault();
-    
-    if (!window.currentProduct) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Product data not available'
-        });
-        return;
-    }
-    
-    // Check stock availability
-    const stockCount = parseInt(window.currentProduct.Stocks || 0);
-    if (stockCount <= 0) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Out of Stock',
-            text: 'This product is currently out of stock'
-        });
-        return;
-    }
-    
-    // Add to cart using CartController
-    const success = CartController.addToCart(window.currentProduct);
-    
-    if (success) {
-        // Update database stock (you'll need an API endpoint for this)
-        updateProductStock(window.currentProduct.ProductID, -1);
-        
-        Swal.fire({
-            icon: 'success',
-            title: 'Added to Cart!',
-            text: `${window.currentProduct.Name} has been added to your cart.`,
-            showConfirmButton: false,
-            timer: 1500
-        });
-        
-        // Close modal after adding to cart
-        $('#productDetailsModal').modal('hide');
-    } else {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Failed to add item to cart'
-        });
-    }
-    });
-
-    // Function to update product stock in database
-    function updateProductStock(productId, quantityChange) {
-        $.ajax({
-            url: `/api/v1/product/${productId}/update-stock`,
-            method: 'PATCH',
-            data: { quantityChange: quantityChange },
-            success: function(response) {
-                console.log('Stock updated successfully');
-            },
-            error: function(xhr, status, error) {
-                console.error('Error updating stock:', error);
-            }
-        });
-    }
-
     // Buy Now button handler
     $(document).on('click', '#buyNowBtn', function(e) {
         e.preventDefault();
@@ -307,6 +262,90 @@ $(document).ready(function () {
         $('#productDetailsModal').modal('hide');
     });
 
+    // Add to Cart button handler
+    $(document).on('click', '#addToCartBtn', function (e) {
+        e.preventDefault();
+
+        if (!window.currentProduct) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Product data not available'
+            });
+            return;
+        }
+
+        // Always use ProductID for cart logic
+        const productId = window.currentProduct.ProductID || window.currentProduct.ID || window.currentProduct.id;
+        const productName = window.currentProduct.Name || window.currentProduct.name;
+        const qty = parseInt($('#cartQty').val()) || 1;
+        const product = window.currentProduct;
+        let cart = getCart();
+        const availableStock = parseInt(product.Stocks) || 0;
+
+        // Only compare by ProductID
+        let existingItemIndex = cart.findIndex(item => item.item_id === productId);
+
+        if (existingItemIndex !== -1) {
+            const existingItem = cart[existingItemIndex];
+            const newQuantity = existingItem.quantity + qty;
+
+            if (newQuantity > availableStock) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Stock Limit',
+                    text: `Only ${availableStock} in stock. You currently have ${existingItem.quantity} in your cart.`
+                });
+                return;
+            }
+
+            // Update quantity
+            cart[existingItemIndex].quantity = newQuantity;
+            console.log('Updated quantity:', cart[existingItemIndex]);
+        } else {
+            if (qty > availableStock) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Stock Limit',
+                    text: `Only ${availableStock} in stock.`
+                });
+                return;
+            }
+
+            // Add new item
+            const newItem = {
+                item_id: productId,
+                description: productName,
+                price: parseFloat(product.Price) || 0,
+                stock: availableStock,
+                quantity: qty
+            };
+
+            cart.push(newItem);
+            console.log('New item added:', newItem);
+        }
+
+        // Save updated cart
+        saveCart(cart);
+
+        // Update UI cart count
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        $('#itemCount').text(totalItems).css('display', 'block');
+
+        // Feedback
+        $('#productDetailsModal').modal('hide');
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Added to Cart',
+            text: `${productName} has been added to your cart.`,
+            timer: 1200,
+            showConfirmButton: false
+        });
+
+        console.log('Final cart state:', cart);
+    });
+
     // Reset modal when closed
     $('#productDetailsModal').on('hidden.bs.modal', function () {
         $('#productCarousel').carousel(0); // Reset to first slide
@@ -327,5 +366,10 @@ $(document).ready(function () {
                 show: false
             });
         }
+    });
+
+    // Initialize header
+    $(document).ready(function() {
+        $('#header').load('./header.html');
     });
 });

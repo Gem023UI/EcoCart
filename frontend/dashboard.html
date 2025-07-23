@@ -1,80 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="../frontend/css/dashboard.css">
-    <title>EcoCart - Admin Dashboard</title>
-
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-      crossorigin="anonymous"
-    />
-
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css"
-      integrity="sha512-fjO3Vy3QodX9c6G9AUmr6WuIaEPdGRxBjD7gjatG5gGylzYyrEq3U0q+smkG6CwIY0L8XALRFHh4KPHig0Q1ug=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-
-    <script
-      src="https://code.jquery.com/jquery-3.6.4.min.js"
-      integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
-      crossorigin="anonymous"
-    ></script>
-
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-      crossorigin="anonymous"
-    ></script>
-
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.min.js"
-      integrity="sha512-LGHBR+kJ5jZSIzhhdfytPoEHzgaYuTRifq9g5l6ja6/k9NAOsAi5dQh4zQF6JIRB8cAYxTRedERUF+97/KuivQ=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    ></script>
-
-    <script src="../frontend/js/dashboard.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - EcoCart</title>
+  <link rel="stylesheet" href="./css/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <header>
-    <nav class="navbar">
-      <div class="logo-container">
-      <a href="./dashboard.html"><img src="./assets/Poppins-removebg-preview.png" alt="EcoCart Logo" class="logo-image"></a>
-      </div>
-      <div class="page-title">
-        <h3>ADMIN DASHBOARD</h3>
-      </div>
-      <nav class="nav-links">
-        <a href="./landingpage.html" class="nav-link">HOME</a>
-         <div class="dropdown">
-          <a class="dropbtn">MANAGEMENT</a>
-          <div class="dropdown-content">
-            <a href="./users.html" class="nav-link">USERS</a>
-             <a href="./products.html" class="nav-link">PRODUCTS</a>
-            <a href="./orders.html" class="nav-link">ORDERS</a>
-          </div>
-        </div>
-      </nav>
-      <nav class="icons">
-        <a href="#" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i></a>
-        <div class="user-dropdown">
-          <a href="#" class="user-icon"><i class="fa-solid fa-circle-user"></i></i></a>
-          <div class="user-dropdown-content">
-            <a href="YOUR_PROFILE_URL_HERE">Profile</a>
-            <a href="YOUR_ORDERS_URL_HERE">Orders</a>
-            <a href="YOUR_LOGOUT_URL_HERE">Logout</a>
-          </div>
-        </div>
-      </nav>
-    </nav>
+  <header>
+    <h1>EcoCart Admin Dashboard</h1>
   </header>
+
+  <section class="summary-cards">
+    <div class="card" id="total-users">Users: ...</div>
+    <div class="card" id="total-products">Products: ...</div>
+    <div class="card" id="completed-orders">Completed Orders: ...</div>
+  </section>
+
+  <section class="charts">
+    <div class="chart-box">
+      <h2>Users by Address</h2>
+      <canvas id="barChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <h2>Products by Category</h2>
+      <canvas id="pieChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <h2>Completed Orders Over Time</h2>
+      <canvas id="lineChart"></canvas>
+    </div>
+  </section>
+
+  <script src="./js/dashboard.js"></script>
 </body>
 </html>

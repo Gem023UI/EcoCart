@@ -25,38 +25,7 @@
     />
 </head>
 <body>
-  <header>
-    <nav class="navbar">
-      <div class="logo-container">
-      <img src="./assets/Poppins-removebg-preview.png" alt="EcoCart Logo" class="logo-image">
-      </div>
-      <div class="search-bar">
-        <input type="text" placeholder="Search for products...">
-      </div>
-      <nav class="nav-links">
-        <a href="./landingpage.html" class="nav-link">HOME</a>
-        <div class="dropdown">
-          <a class="dropbtn">CATEGORIES</a>
-          <div class="dropdown-content">
-            <a href="YOUR_ESSENTIALS_URL_HERE">Essentials</a>
-            <a href="YOUR_CLOTHING_URL_HERE">Clothing</a>
-            <a href="YOUR_CUTLERY_URL_HERE">Cutlery</a>
-          </div>
-        </div>
-      </nav>
-      <nav class="icons">
-        <a href="./cart.html" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i></a>
-        <div class="user-dropdown">
-          <a href="#" class="user-icon"><i class="fa-solid fa-circle-user"></i></i></a>
-          <div class="user-dropdown-content">
-            <a href="YOUR_PROFILE_URL_HERE">Profile</a>
-            <a href="YOUR_ORDERS_URL_HERE">Orders</a>
-            <a href="YOUR_LOGOUT_URL_HERE">Logout</a>
-          </div>
-        </div>
-      </nav>
-    </nav>
-  </header>
+  <header id="header"></header>
   
   <section class="banner">
     <img src="./assets/banner.png" alt="ecocart-banner" class="banner-image">
@@ -131,6 +100,10 @@
                                   <strong>Category:</strong>
                                   <p id="productCategory" class="text-muted">Category</p>
                               </div>
+                              <div class="form-group">
+                                  <label for="cartQty">Quantity:</label>
+                                  <input type="number" id="cartQty" value="1" min="1" class="form-control" />
+                              </div>
                               
                               <!-- Action Buttons -->
                               <div class="mt-4">
@@ -140,13 +113,11 @@
                                   <button type="button" id="addToCartBtn" class="btn btn-primary btn-lg" style="min-width: 120px;">
                                       <i class="fas fa-shopping-cart"></i> Add to Cart
                                   </button>
+                                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                               </div>
                           </div>
                       </div>
                   </div>
-              </div>
-              <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
               </div>
           </div>
       </div>
@@ -179,34 +150,5 @@
   ></script>
 
   <script src="./js/product.js"></script>
-
-  <script>
-    // User Options @ Hover
-    const userIcon = document.querySelector('.user-icon');
-    const userDropdownContent = document.querySelector('.user-dropdown-content');
-
-    userIcon.addEventListener('click', (e) => {
-      e.preventDefault();
-      userDropdownContent.classList.toggle('show');
-    });
-
-    // Close dropdown when clicking outside
-    window.addEventListener('click', function(e) {
-      if (!e.target.closest('.user-dropdown')) {
-        userDropdownContent.classList.remove('show');
-      }
-    });
-
-    // Ensure Bootstrap components are properly initialized
-    $(document).ready(function() {
-      // Initialize tooltips if needed
-      $('[data-toggle="tooltip"]').tooltip();
-      
-      // Ensure modal backdrop clicks work properly
-      $(document).on('click', '.modal-backdrop', function() {
-        $('.modal').modal('hide');
-      });
-    });
-  </script>
 </body>
 </html>
