@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - EcoCart</title>
+  <link rel="stylesheet" href="./css/dashboard.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1>EcoCart Admin Dashboard</h1>
+  </header>
+
+  <!-- Navigation Buttons Section -->
+  <section class="summary-cards">
+    <a href="users.html" class="card nav-button">
+      <div><strong>Manage Users</strong></div>
+    </a>
+    <a href="products.html" class="card nav-button">
+      <div><strong>Manage Products</strong></div>
+    </a>
+    <a href="orders.html" class="card nav-button">
+      <div><strong>Manage Orders</strong></div>
+    </a>
+    <a href="charts.html" class="card nav-button">
+      <div><strong>Go to Charts</strong></div>
+    </a>
+  </section>
+
+  <!-- Dashboard Summary Cards -->
+  <section class="summary-cards">
+    <div class="card" id="total-users">Users: ...</div>
+    <div class="card" id="total-products">Products: ...</div>
+    <div class="card" id="completed-orders">Completed Orders: ...</div>
+  </section>
+
+  <!-- Dashboard Charts -->
+  <section class="charts">
+    <div class="chart-box">
+      <h2>Users by Address</h2>
+      <canvas id="barChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <h2>Products by Category</h2>
+      <canvas id="pieChart"></canvas>
+    </div>
+    <div class="chart-box">
+      <h2>Completed Orders Over Time</h2>
+      <canvas id="lineChart"></canvas>
+    </div>
+  </section>
+
+  <script src="./js/dashboard.js"></script>
+</body>
+</html>

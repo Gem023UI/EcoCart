@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCart - Shopping Cart</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/cart.css">
+
+</head>
+<body>
+    <header>
+        <div id="headerContainer"></div>
+    </header>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-md-8">
+                <h2>Shopping Cart</h2>
+                <div id="cartItems"></div>
+            </div>
+            <div class="col-md-4">
+                <div class="cart-summary">
+                    <h4>Order Summary</h4>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Items:</span>
+                        <span id="totalItems">0</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong id="total">$0.00</strong>
+                    </div>
+                    <button class="btn btn-success w-100 mb-2" id="checkoutBtn">
+                        <i class="fas fa-credit-card"></i> Proceed to Checkout
+                    </button>
+                    <button class="btn btn-outline-danger w-100" id="clearCartBtn">
+                        <i class="fas fa-trash"></i> Clear Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include jQuery, Bootstrap JS, and SweetAlert2 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.12/sweetalert2.all.min.js"></script>
+
+    <script>
+    $(document).ready(function () {
+        // Test: Set userID for testing (Remove in prod)
+        localStorage.setItem("userID", "28"); // <-- Example userID
+
+        // Load cart logic (to be implemented later)
+        console.log("Cart page ready.");
+    });
+    </script>
+    
+    <!-- Include Cart Controller -->
+    <script src="./js/cart.js"></script>
+
+    <script>
+        $("#headerContainer").load("header.html");
+    </script>
+</body>
+</html>

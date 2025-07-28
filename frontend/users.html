@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../frontend/css/dashboard.css">
+    
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.css"
+      integrity="sha512-fjO3Vy3QodX9c6G9AUmr6WuIaEPdGRxBjD7gjatG5gGylzYyrEq3U0q+smkG6CwIY0L8XALRFHh4KPHig0Q1ug=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <script
+      src="https://code.jquery.com/jquery-3.6.4.min.js"
+      integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+      crossorigin="anonymous"
+    ></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.16.1/sweetalert2.min.js"
+      integrity="sha512-LGHBR+kJ5jZSIzhhdfytPoEHzgaYuTRifq9g5l6ja6/k9NAOsAi5dQh4zQF6JIRB8cAYxTRedERUF+97/KuivQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+
+    <script src="../frontend/js/manageuser.js"></script>
+
+    <title>EcoCart - Admin Dashboard</title>
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <div class="logo-container">
+      <a href="./landingpage.html"><img src="./assets/Poppins-removebg-preview.png" alt="EcoCart Logo" class="logo-image"></a>
+      </div>
+      <div class="page-title">
+        <h3>USER MANAGEMENT</h3>
+      </div>
+      <nav class="nav-links">
+        <a href="./landingpage.html" class="nav-link">HOME</a>
+         <div class="dropdown">
+          <a class="dropbtn">MANAGEMENT</a>
+          <div class="dropdown-content">
+            <a href="./users.html" class="nav-link">Users</a>
+            <a href="./products.html" class="nav-link">Products</a>
+            <a href="./orders.html" class="nav-link">Orders</a>
+          </div>
+        </div>
+      </nav>
+      <nav class="icons">
+        <a href="#" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i></a>
+        <div class="user-dropdown">
+          <a href="#" class="user-icon"><i class="fa-solid fa-circle-user"></i></i></a>
+          <div class="user-dropdown-content">
+            <a href="YOUR_PROFILE_URL_HERE">Profile</a>
+            <a href="YOUR_ORDERS_URL_HERE">Orders</a>
+            <a href="YOUR_LOGOUT_URL_HERE">Logout</a>
+          </div>
+        </div>
+      </nav>
+    </nav>
+  </header>
+    <table class="usersTable" id="usersTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>FIRST NAME</th>
+                <th>LAST NAME</th>
+                <th>ADDRESS</th>
+                <th>EMAIL</th>
+                <th>PHONE</th>
+                <th>ROLE</th>
+                <th>STATUS</th>
+                <th>ACTIONS</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Users will be loaded here -->
+        </tbody>
+    </table>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <form id="editUserForm" class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Edit User</h5>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editUserId">
+            <div class="form-group">
+              <label for="editFirstName">First Name</label>
+              <input type="text" class="form-control" id="editFirstName" required>
+            </div>
+            <div class="form-group">
+              <label for="editLastName">Last Name</label>
+              <input type="text" class="form-control" id="editLastName" required>
+            </div>
+            <div class="form-group">
+              <label for="editAddress">Address</label>
+              <select class="form-control" id="editAddress">
+                <option value="Bagumbayan">Bagumbayan</option>
+                <option value="Bambang">Bambang</option>
+                <option value="Calzada">Calzada</option>
+                <option value="Hagonoy">Hagonoy</option>
+                <option value="Ibayo-Tipas">Ibayo-Tipas</option>
+                <option value="Ligid-Tipas">Ligid-Tipas</option>
+                <option value="Lower Bicutan">Lower Bicutan</option>
+                <option value="New Lower Bicutan">New Lower Bicutan</option>
+                <option value="Napindan">Napindan</option>
+                <option value="North Daang Hari">North Daang Hari</option>
+                <option value="North Signal Village">North Signal Village</option>
+                <option value="North Taguig">North Taguig</option>
+                <option value="Pinagsama">Pinagsama</option>
+                <option value="San Miguel">San Miguel</option>
+                <option value="Santa Ana">Santa Ana</option>
+                <option value="South Daang Hari">South Daang Hari</option>
+                <option value="South Signal Village">South Signal Village</option>
+                <option value="South Taguig">South Taguig</option>
+                <option value="Tanyag">Tanyag</option>
+                <option value="Upper Bicutan">Upper Bicutan</option>
+                <option value="Ususan">Ususan</option>
+                <option value="Wawa">Wawa</option>
+                <option value="Western Bicutan">Western Bicutan</option>
+                <option value="Fort Bonifacio">Fort Bonifacio</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="editEmail">Email</label>
+              <input type="email" class="form-control" id="editEmail" required>
+            </div>
+            <div class="form-group">
+              <label for="editPhoneNumber">Phone</label>
+              <input type="text" class="form-control" id="editPhoneNumber" required>
+            </div>
+            <div class="form-group">
+              <label for="editRole">Role</label>
+              <select class="form-control" id="editRole">
+                <option value="1">Admin</option>
+                <option value="2">Customer</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="editStatus">Status</label>
+              <select class="form-control" id="editStatus">
+                <option value="1">Active</option>
+                <option value="2">Deactivated</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn-save">Save changes</button>
+            <button type="button" class="btn-cancel" data-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  <script>
+    // User Options @ Hover
+    const userIcon = document.querySelector('.user-icon');
+    const userDropdownContent = document.querySelector('.user-dropdown-content');
+
+    userIcon.addEventListener('click', (e) => {
+      e.preventDefault();
+      userDropdownContent.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', function(e) {
+      if (!e.target.closest('.user-dropdown')) {
+        userDropdownContent.classList.remove('show');
+      }
+    });
+  </script>
+
+</body>
+</html>

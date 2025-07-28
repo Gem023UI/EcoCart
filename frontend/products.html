@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCart - Product Management</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap4.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="../frontend/css/manageproduct.css">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap4.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+    
+    <!-- Bootbox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js"></script>
+</head>
+<body>
+    <!-- Header Section -->
+    <header class="main-header">
+        <nav class="navbar">
+            <div class="logo-container">
+                <a href="./dashboard.html">
+                    <img src="./assets/Poppins-removebg-preview.png" alt="EcoCart Logo" class="logo-image">
+                </a>
+            </div>
+            <div class="page-title">
+                <h3><i class="fas fa-box"></i> PRODUCT MANAGEMENT</h3>
+            </div>
+            <nav class="nav-links">
+                <a href="./landingpage.html" class="nav-link">
+                    <i class="fas fa-home"></i> HOME
+                </a>
+                <div class="dropdown">
+                    <a class="dropbtn">
+                        <i class="fas fa-cog"></i> MANAGEMENT
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="./users.html" class="nav-link">
+                            <i class="fas fa-users"></i> Users
+                        </a>
+                        <a href="./products.html" class="nav-link active">
+                            <i class="fas fa-box"></i> Products
+                        </a>
+                        <a href="./orders.html" class="nav-link">
+                            <i class="fas fa-shopping-cart"></i> Orders
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <nav class="icons">
+                <a href="#" class="cart-icon">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="cart-count">0</span>
+                </a>
+                <div class="user-dropdown">
+                    <a href="#" class="user-icon">
+                        <i class="fa-solid fa-circle-user"></i>
+                    </a>
+                    <div class="user-dropdown-content">
+                        <a href="#"><i class="fas fa-user"></i> Profile</a>
+                        <a href="#"><i class="fas fa-shopping-bag"></i> Orders</a>
+                        <a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </nav>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Alert Container -->
+        <div id="alertContainer" class="alert-container"></div>
+
+        <!-- Products Section -->
+        <section class="products-section">
+            <div class="section-header">
+                <h2><i class="fas fa-inventory"></i> Product Inventory</h2>
+                <p>Manage your product catalog efficiently</p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalProducts">0</h3>
+                        <p>Total Products</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-warehouse"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalStock">0</h3>
+                        <p>Total Stock</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-tags"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="totalCategories">3</h3>
+                        <p>Categories</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="lowStock">0</h3>
+                        <p>Low Stock</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Table Container -->
+            <div class="table-container">
+                <table id="ptable" class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Category</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Images</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be loaded via DataTables -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- Product Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">
+                        <i class="fas fa-plus"></i> EcoCart - Products
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="pform" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="productName">
+                                        <i class="fas fa-tag"></i> Product Name
+                                    </label>
+                                    <input type="text" class="form-control" id="productName" name="name" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="productCategory">
+                                        <i class="fas fa-list"></i> Category
+                                    </label>
+                                    <select class="form-control" id="productCategory" name="category" required>
+                                        <option value="">Select Category</option>
+                                        <option value="1">Essentials</option>
+                                        <option value="2">Clothing</option>
+                                        <option value="3">Cutlery</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productDescription">
+                                <i class="fas fa-align-left"></i> Description
+                            </label>
+                            <textarea class="form-control" id="productDescription" name="description" rows="3" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="productPrice">
+                                        <i class="fas fa-dollar-sign"></i> Price
+                                    </label>
+                                    <input type="number" class="form-control" id="productPrice" name="price" step="0.01" min="0" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="productStocks">
+                                        <i class="fas fa-warehouse"></i> Stock
+                                    </label>
+                                    <input type="number" class="form-control" id="productStocks" name="stocks" min="0" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="productImageFiles">
+                                <i class="fas fa-images"></i> Product Images
+                            </label>
+                            <input type="file" class="form-control-file" id="productImageFiles" name="productImageFiles" multiple accept="image/*">
+                            <small class="form-text text-muted">Select multiple images (JPG, PNG, GIF)</small>
+                        </div>
+                        
+                        <!-- Existing Images Container -->
+                        <div id="productImages" class="existing-images"></div>
+                        
+                        <!-- Image Preview Container -->
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="productSubmit">
+                            <i class="fas fa-save"></i> Save Product
+                        </button>
+                        <button type="button" class="btn btn-success" id="productUpdate" style="display: none;">
+                            <i class="fas fa-edit"></i> Update Product
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include JavaScript -->
+    <script src="./js/manageproduct.js"></script>
+</body>
+</html> 

@@ -1,0 +1,62 @@
+<link rel="stylesheet" href="./css/header.css">
+<header>
+    <nav class="navbar">
+      <div class="logo-container">
+      <img src="./assets/Poppins-removebg-preview.png" alt="EcoCart Logo" class="logo-image">
+      </div>
+      <div class="search-bar">
+        <input type="text" placeholder="Search for products...">
+      </div>
+      <nav class="nav-links">
+        <a href="./landingpage.html" class="nav-link">HOME</a>
+        <div class="dropdown">
+          <a class="dropbtn">CATEGORIES</a>
+          <div class="dropdown-content">
+            <a href="YOUR_ESSENTIALS_URL_HERE">Essentials</a>
+            <a href="YOUR_CLOTHING_URL_HERE">Clothing</a>
+            <a href="YOUR_CUTLERY_URL_HERE">Cutlery</a>
+          </div>
+        </div>
+    </nav>
+    <nav class="icons">
+        <a href="./cart.html" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i></a>
+        <div class="user-dropdown">
+          <a href="#" class="user-icon"><i class="fa-solid fa-circle-user"></i></i></a>
+          <div class="user-dropdown-content">
+            <a href="YOUR_PROFILE_URL_HERE">Profile</a>
+            <a href="YOUR_ORDERS_URL_HERE">Orders</a>
+            <a href="YOUR_LOGOUT_URL_HERE">Logout</a>
+          </div>
+        </div>
+      </nav>
+    </nav>
+
+    <script>
+      // User Options @ Hover
+    const userIcon = document.querySelector('.user-icon');
+    const userDropdownContent = document.querySelector('.user-dropdown-content');
+
+    userIcon.addEventListener('click', (e) => {
+      e.preventDefault();
+      userDropdownContent.classList.toggle('show');
+    });
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', function(e) {
+      if (!e.target.closest('.user-dropdown')) {
+        userDropdownContent.classList.remove('show');
+      }
+    });
+
+    // Ensure Bootstrap components are properly initialized
+    $(document).ready(function() {
+      // Initialize tooltips if needed
+      $('[data-toggle="tooltip"]').tooltip();
+      
+      // Ensure modal backdrop clicks work properly
+      $(document).on('click', '.modal-backdrop', function() {
+        $('.modal').modal('hide');
+      });
+    });
+    </script>
+</header>

@@ -1,0 +1,49 @@
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #f4fff4;
+  margin: 0;
+  padding: 0;
+  color: #033b24;
+}
+
+header {
+  background-color: #003b29;
+  padding: 1rem;
+  color: #ffffff;
+  text-align: center;
+}
+
+.summary-cards {
+  display: flex;
+  justify-content: space-around;
+  margin: 2rem;
+  flex-wrap: wrap;
+}
+
+.card {
+  background-color: #d5f7d5;
+  border: 2px solid #5dc567;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 250px;
+  text-align: center;
+  font-size: 1.2rem;
+  margin: 1rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.charts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 2rem;
+}
+
+.chart-box {
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 1rem;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  width: 500px;
+}
