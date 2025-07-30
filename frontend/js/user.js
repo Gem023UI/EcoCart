@@ -147,13 +147,14 @@ $(document).ready(function () {
                 timer: 2000,
                 timerProgressBar: true
             });
+
             // Place this in your frontend login AJAX success handler
-            if (response.success) {
-            // Store token as adminToken or userToken based on tokenKey
-            sessionStorage.setItem(response.tokenKey, response.token);
-            // Also store userId and roleId for reference
-            sessionStorage.setItem('userId', response.user.userId);
-            sessionStorage.setItem('roleId', response.user.roleId);
+            if (data.success) {
+                // Store token as adminToken or userToken based on tokenKey
+                sessionStorage.setItem(data.tokenKey, data.token);
+                // Also store userId and roleId for reference
+                sessionStorage.setItem('userId', data.user.userId);
+                sessionStorage.setItem('roleId', data.user.roleId);
             }
 
             // Check user role and redirect accordingly
@@ -228,9 +229,6 @@ $(document).ready(function () {
             }
         });
     });
-
-    $('#loginBody').load("header.html");
-
 
     $("#profile").load("header.html", function () {
         // After header is loaded, check sessionStorage for userId

@@ -6,6 +6,8 @@ $(document).ready(function() {
     return;
   }
 
+  const url = 'http://localhost:4000';
+
   // Initialize variables
   let currentPage = 1;
   const ordersPerPage = 10;
@@ -14,19 +16,19 @@ $(document).ready(function() {
 
   // Load orders
   function loadOrders() {
-    $.ajax({
-      url: '/api/v1/manageorder/',
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${adminToken}`
-      },
+  $.ajax({
+    url: `${url}/api/v1/manageorder/`, // Use correct base URL
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${adminToken}`
+    },
       success: function(orders) {
         allOrders = orders;
         applyFilters();
       },
       error: function(xhr) {
         if (xhr.status === 401) {
-          window.location.href = 'login.html';
+          window.location.href = 'loginregister.html';
         } else {
           showAlert('danger', 'Failed to load orders. Please try again.');
         }
