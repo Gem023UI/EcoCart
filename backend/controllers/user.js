@@ -98,23 +98,35 @@ const loginUser = (req, res) => {
         email: user.Email,
         roleId: user.RoleID
       },
-      process.env.JWT_SECRET || 'your_jwt_secret', // Use env variable in production!
+      process.env.JWT_SECRET || 'your_jwt_secret',
       { expiresIn: '2h' }
     );
 
-    // Respond with token and user info
-    return res.status(200).json({
-      success: true,
-      message: "Login successful",
-      token, // <-- JWT token here
-      user: {
-        userId: user.UserID,
-        firstname: user.FirstName,
-        lastname: user.LastName,
-        email: user.Email,
-        roleId: user.RoleID,
-        statusId: user.StatusID
+    // Insert token into users table (sessionToken column)
+    const updateTokenSql = 'UPDATE users SET sessionToken = ? WHERE UserID = ?';
+    connection.execute(updateTokenSql, [token, user.UserID], (updateErr) => {
+      if (updateErr) {
+        console.error('Error updating sessionToken:', updateErr);
+        // Continue anyway, but you may want to handle this differently
       }
+
+      // Respond with token and user info, and indicate which key to use in sessionStorage
+      let tokenKey = user.RoleID === 1 ? 'adminToken' : 'userToken'; // 1 = Admin, 2 = Customer
+
+      return res.status(200).json({
+        success: true,
+        message: "Login successful",
+        token,
+        tokenKey, // Tell frontend which key to use
+        user: {
+          userId: user.UserID,
+          firstname: user.FirstName,
+          lastname: user.LastName,
+          email: user.Email,
+          roleId: user.RoleID,
+          statusId: user.StatusID
+        }
+      });
     });
   });
 };

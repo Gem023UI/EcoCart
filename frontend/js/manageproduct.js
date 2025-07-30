@@ -296,4 +296,8 @@ $(document).ready(function () {
         $('#productImageFiles').val('');
         $('#imagePreview').empty();
     });
+
+    $(document).ready(function() {
+        $('#adminheader').load('./adminheader.html');
+    });
 });

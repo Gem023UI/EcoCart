@@ -48,4 +48,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     },
     options: { responsive: true }
   });
+
+  $('#adminheader').load('./adminheader.html');
 });

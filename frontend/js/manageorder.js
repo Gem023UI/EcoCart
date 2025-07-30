@@ -1,8 +1,8 @@
 $(document).ready(function() {
   // Check admin authentication
-  const adminToken = localStorage.getItem('adminToken');
+  const adminToken = sessionStorage.getItem('adminToken');
   if (!adminToken) {
-    window.location.href = 'login.html';
+    window.location.href = 'loginregister.html';
     return;
   }
 
@@ -15,7 +15,7 @@ $(document).ready(function() {
   // Load orders
   function loadOrders() {
     $.ajax({
-      url: '/api/admin/orders',
+      url: '/api/v1/manageorder/',
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${adminToken}`
@@ -452,10 +452,8 @@ $(document).ready(function() {
     applyFilters();
   });
 
-  $('#logout-btn').click(function(e) {
-    e.preventDefault();
-    localStorage.removeItem('adminToken');
-    window.location.href = 'login.html';
+  $(document).ready(function() {
+      $('#adminheader').load('./adminheader.html');
   });
 
   // Initial load

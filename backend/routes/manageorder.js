@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const orderController = require('../controllers/manageorder');
-const { verifyAdmin } = require('../middleware/authMiddleware');
+const { verifyAdmin } = require('../middleware/auth');
 
 router.get('/', verifyAdmin, orderController.getAllOrders);
 router.get('/:id', verifyAdmin, orderController.getOrderById);

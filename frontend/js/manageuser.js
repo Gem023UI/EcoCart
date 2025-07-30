@@ -182,3 +182,7 @@ $(document).ready(function() {
         });
     });
 });
+
+$(document).ready(function() {
+    $('#adminheader').load('./adminheader.html');
+});

@@ -1,57 +1,60 @@
-const db = require('../config/database'); // Assuming you have a MySQL connection setup
+const connection = require('../config/database');
+const path = require('path');
+const fs = require('fs');
 
 exports.getAllOrders = async (req, res) => {
   try {
     const [orders] = await db.query(`
       SELECT 
-    ol.OrderLineID as id,
-    ol.Name as customer_name,
-    ol.Address as shipping_address,
-    ol.PhoneNumber,
-    oi.OrderItemID,
-    oi.ProductID,
-    oi.Quantity,
-    oi.SubTotal as item_price,
-    p.Name as product_name,
-    p.Price as product_price,
-    oh.status
-  FROM orderline ol
-  LEFT JOIN orderitem oi ON ol.OrderLineID = oi.OrderLineID
-  LEFT JOIN product p ON oi.ProductID = p.ProductID
-  LEFT JOIN orderhistory oh ON ol.OrderLineID = oh.OrderLineID
-`);
-    
+        ol.OrderLineID as id,
+        ol.Name as customer_name,
+        ol.Address as shipping_address,
+        ol.PhoneNumber,
+        oh.status,
+        oh.UserID as user_id,
+        oi.OrderItemID,
+        oi.ProductID as product_id,
+        oi.Quantity,
+        oi.SubTotal as item_price,
+        p.Name as product_name,
+        p.Price as product_price
+      FROM orderline ol
+      LEFT JOIN orderitem oi ON ol.OrderLineID = oi.OrderLineID
+      LEFT JOIN product p ON oi.ProductID = p.ProductID
+      LEFT JOIN orderhistory oh ON ol.OrderLineID = oh.OrderLineID
+      ORDER BY ol.OrderLineID DESC
+    `);
+
     // Group items by order
-    const groupedOrders = orders.reduce((acc, row) => {
-      if (!acc[row.id]) {
-        acc[row.id] = {
+    const groupedOrders = {};
+    orders.forEach(row => {
+      if (!groupedOrders[row.id]) {
+        groupedOrders[row.id] = {
           id: row.id,
-          user_id: row.user_id,
-          total: row.total,
-          status: row.status,
-          created_at: row.created_at,
-          shipping_address: row.shipping_address,
           user: {
             id: row.user_id,
-            name: row.user_name,
-            email: row.user_email
+            name: row.customer_name,
+            phone: row.PhoneNumber
           },
+          total: 0,
+          status: row.status || 'pending',
+          created_at: '', // Not available, can be added if you have a column
+          shipping_address: row.shipping_address,
           items: []
         };
       }
       if (row.product_id) {
-        acc[row.id].items.push({
+        groupedOrders[row.id].items.push({
           product_id: row.product_id,
           product_name: row.product_name,
           product_price: row.product_price,
-          product_image: row.product_image,
-          quantity: row.quantity,
+          quantity: row.Quantity,
           item_price: row.item_price
         });
+        groupedOrders[row.id].total += parseFloat(row.item_price || 0);
       }
-      return acc;
-    }, {});
-    
+    });
+
     res.json(Object.values(groupedOrders));
   } catch (error) {
     console.error('Error fetching orders:', error);

@@ -12,9 +12,11 @@ const userRoutes = require('../routes/user');
 const productRoutes = require('../routes/product');
 const manageUserRoutes = require('../routes/manageuser');
 const manageProductRoutes = require('../routes/manageproduct');
+const manageOrderRoutes = require('../routes/manageorder');
 const adminRoutes = require('../routes/dashboard');
-const orderRoutes = require('../routes/order');
 const orderHistoryRoutes = require('../routes/orderhistory');
+const orderRoutes = require('../routes/order');
+
 
 
 // Import controllers directly if needed
@@ -46,13 +48,14 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // API Routes
+app.use('/api/v1', adminRoutes);
 app.use('/api/v1', userRoutes);
 app.use('/api/v1', productRoutes);
 app.use('/api/v1', manageUserRoutes);
 app.use('/api/v1', manageProductRoutes);
-app.use('/api/v1', adminRoutes);
+app.use('/api/v1', manageOrderRoutes);
 app.use('/api/v1', orderRoutes);
-app.use('/api/orderhistory', orderHistoryRoutes);
+app.use('/api/v1', orderHistoryRoutes);
 
 // ✅ ✅ Add this new direct route to handle productImage uploads
 app.post('/api/v1/productImage/', upload.array('images'), productController.createProduct);
