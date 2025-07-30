@@ -24,14 +24,42 @@ exports.getAllOrders = (req, res) => {
     LEFT JOIN orderhistory oh ON ol.OrderLineID = oh.OrderLineID
     ORDER BY ol.OrderLineID DESC
   `;
-  connection.query(sql, (err, orders) => {
-    if (err) {
-      console.error('Error fetching orders:', err);
-      return res.status(500).json({ error: err.message });
+  connection.query(sql, (err, rows) => {
+  if (err) {
+    console.error('Error fetching orders:', err);
+    return res.status(500).json({ error: err.message });
+  }
+
+  // Group rows by OrderLineID
+  const groupedOrders = {};
+
+  rows.forEach(row => {
+    if (!groupedOrders[row.id]) {
+      groupedOrders[row.id] = {
+        id: row.id,
+        user: { name: row.customer_name },
+        shipping_address: row.shipping_address,
+        phone: row.PhoneNumber,
+        status: row.status,
+        user_id: row.user_id,
+        items: []
+      };
     }
-    // ...grouping logic...
-    res.json(Object.values(groupedOrders));
+
+    if (row.product_id) {
+      groupedOrders[row.id].items.push({
+        product_id: row.product_id,
+        product_name: row.product_name,
+        product_price: row.product_price,
+        quantity: row.Quantity,
+        item_price: row.item_price
+      });
+    }
   });
+
+  res.json(Object.values(groupedOrders));
+});
+
 };
 
 // GET ORDER BY ID

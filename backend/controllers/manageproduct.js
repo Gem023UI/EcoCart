@@ -284,8 +284,6 @@ exports.updateProduct = (req, res) => {
     });
 };
 
-
-
 exports.deleteProduct = (req, res) => {
     const id = req.params.id;
     

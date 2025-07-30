@@ -17,7 +17,7 @@ $(document).ready(function() {
   // Load orders
   function loadOrders() {
   $.ajax({
-    url: `${url}/api/v1/manageorder/`, // Use correct base URL
+    url: `${url}/api/v1/renderOrders/`, // Use correct base URL
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${adminToken}`
@@ -241,13 +241,13 @@ $(document).ready(function() {
 
   // Update order status
   function updateOrderStatus(orderId, newStatus) {
-    $.ajax({
-      url: `/api/admin/orders/${orderId}/status`,
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${adminToken}`,
-        'Content-Type': 'application/json'
-      },
+  $.ajax({
+    url: `${url}/api/v1/updateOrderID/${orderId}/status`, // FIXED
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${adminToken}`,
+      'Content-Type': 'application/json'
+    },
       data: JSON.stringify({ status: newStatus }),
       success: function() {
         showAlert('success', 'Order status updated successfully!');
@@ -261,14 +261,13 @@ $(document).ready(function() {
 
   // View order details
   function viewOrderDetails() {
-    const orderId = $(this).data('id');
-    
-    $.ajax({
-      url: `/api/admin/orders/${orderId}`,
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${adminToken}`
-      },
+  const orderId = $(this).data('id');
+  $.ajax({
+    url: `${url}/api/v1/renderOrderID/${orderId}`, // FIXED
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${adminToken}`
+    },
       success: function(order) {
         renderOrderDetails(order);
         $('#orderDetailsModal').modal('show');
@@ -402,12 +401,12 @@ $(document).ready(function() {
 
   // Perform order deletion
   function performDeleteOrder(orderId) {
-    $.ajax({
-      url: `/api/admin/orders/${orderId}`,
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${adminToken}`
-      },
+  $.ajax({
+    url: `${url}/api/v1/deleteOrderID/${orderId}`, // FIXED
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${adminToken}`
+    },
       success: function() {
         showAlert('success', 'Order deleted successfully!');
         loadOrders();
@@ -431,6 +430,7 @@ $(document).ready(function() {
   }
 
   function capitalizeFirstLetter(string) {
+  if (!string || typeof string !== 'string') return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
