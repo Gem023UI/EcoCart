@@ -56,51 +56,61 @@ $(document).ready(function() {
 
   // Render orders table
   function renderOrdersTable() {
-    const tbody = $('#orders-table-body');
-    tbody.empty();
-    
-    if (filteredOrders.length === 0) {
-      tbody.append('<tr><td colspan="7" class="text-center py-4">No orders found.</td></tr>');
-      return;
-    }
-    
-    // Calculate pagination slice
-    const startIdx = (currentPage - 1) * ordersPerPage;
-    const paginatedOrders = filteredOrders.slice(startIdx, startIdx + ordersPerPage);
-    
-    paginatedOrders.forEach(order => {
-      const orderDate = order.date ? new Date(order.date).toLocaleDateString() : 'NULL';
-      const customerName = order.user ? order.user.name : 'Guest';
-      const itemCount = order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
-      
-      const row = `
-        <tr>
-          <td>#${order.id}</td>
-          <td>${customerName}</td>
-          <td>${orderDate}</td>
-          <td>${itemCount}</td>
-          <td>₱${parseFloat(order.total).toFixed(2)}</td>
-          <td>
-            <span class="badge badge-${getBadgeClass(order.status)} status-badge" 
-                  data-order-id="${order.id}" data-current-status="${order.status}">
-              ${capitalizeFirstLetter(order.status)}
-            </span>
-          </td>
-          <td>
-            <button class="btn btn-sm btn-info view-order" data-id="${order.id}">
-              <i class="fas fa-eye"></i>
-            </button>
-            <button class="btn btn-sm btn-danger delete-order" data-id="${order.id}">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      `;
-      tbody.append(row);
-    });
-    
+  const tbody = $('#orders-table-body');
+  tbody.empty();
+
+  if (filteredOrders.length === 0) {
+    tbody.append('<tr><td colspan="7" class="text-center py-4">No orders found.</td></tr>');
+    return;
+  }
+
+  const startIdx = (currentPage - 1) * ordersPerPage;
+  const paginatedOrders = filteredOrders.slice(startIdx, startIdx + ordersPerPage);
+
+  paginatedOrders.forEach(order => {
+    const orderDate = order.date ? new Date(order.date).toLocaleDateString() : 'NULL';
+    const customerName = order.user ? order.user.name : 'Guest';
+    const itemCount = order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
+
+    // Status options
+    const statusOptions = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+    const statusSelect = `
+      <select class="form-control status-select" data-order-id="${order.id}">
+        ${statusOptions.map(opt => `
+          <option value="${opt}" ${order.status === opt ? 'selected' : ''}>
+            ${capitalizeFirstLetter(opt)}
+          </option>
+        `).join('')}
+      </select>
+    `;
+
+    const row = `
+      <tr>
+        <td>#${order.id}</td>
+        <td>${customerName}</td>
+        <td>${orderDate}</td>
+        <td>${itemCount}</td>
+        <td>₱${parseFloat(order.total || 0).toFixed(2)}</td>
+        <td>${statusSelect}</td>
+        <td>
+          <button class="btn btn-sm btn-info view-order" data-id="${order.id}">
+            <i class="fas fa-eye"></i>
+          </button>
+          <button class="btn btn-sm btn-danger delete-order" data-id="${order.id}">
+            <i class="fas fa-trash"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+    tbody.append(row);
+  });
+
     // Attach event listeners
-    $('.status-badge').click(handleStatusChange);
+    $('.status-select').change(function() {
+      const orderId = $(this).data('order-id');
+      const newStatus = $(this).val();
+      updateOrderStatus(orderId, newStatus);
+    });
     $('.view-order').click(viewOrderDetails);
     $('.delete-order').click(deleteOrder);
   }
@@ -242,13 +252,13 @@ $(document).ready(function() {
   // Update order status
   function updateOrderStatus(orderId, newStatus) {
   $.ajax({
-    url: `${url}/api/v1/updateOrderID/${orderId}/status`, // FIXED
+    url: `${url}/api/v1/updateOrderID/${orderId}/status`,
     method: 'PUT',
     headers: {
       'Authorization': `Bearer ${adminToken}`,
       'Content-Type': 'application/json'
     },
-      data: JSON.stringify({ status: newStatus }),
+    data: JSON.stringify({ status: newStatus }),
       success: function() {
         showAlert('success', 'Order status updated successfully!');
         loadOrders();

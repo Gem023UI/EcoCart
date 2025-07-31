@@ -129,7 +129,8 @@ exports.updateOrderStatus = (req, res) => {
     return res.status(400).json({ error: 'Invalid status value' });
   }
 
-  const sql = 'UPDATE orders SET status = ? WHERE id = ?';
+  // Update status in orderhistory table
+  const sql = 'UPDATE orderhistory SET status = ? WHERE OrderLineID = ?';
   connection.query(sql, [status, orderId], (err, result) => {
     if (err) {
       console.error('Error updating order status:', err);
@@ -145,20 +146,30 @@ exports.updateOrderStatus = (req, res) => {
 // DELETE ORDER
 exports.deleteOrder = (req, res) => {
   const orderId = req.params.id;
-  connection.query('DELETE FROM order_items WHERE order_id = ?', [orderId], (err) => {
+
+  // Delete order items first
+  connection.query('DELETE FROM orderitem WHERE OrderLineID = ?', [orderId], (err) => {
     if (err) {
       console.error('Error deleting order items:', err);
       return res.status(500).json({ error: err.message });
     }
-    connection.query('DELETE FROM orders WHERE id = ?', [orderId], (err, result) => {
+    // Delete order history
+    connection.query('DELETE FROM orderhistory WHERE OrderLineID = ?', [orderId], (err) => {
       if (err) {
-        console.error('Error deleting order:', err);
+        console.error('Error deleting order history:', err);
         return res.status(500).json({ error: err.message });
       }
-      if (result.affectedRows === 0) {
-        return res.status(404).json({ error: 'Order not found' });
-      }
-      res.json({ message: 'Order deleted successfully' });
+      // Delete order line
+      connection.query('DELETE FROM orderline WHERE OrderLineID = ?', [orderId], (err, result) => {
+        if (err) {
+          console.error('Error deleting order:', err);
+          return res.status(500).json({ error: err.message });
+        }
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ error: 'Order not found' });
+        }
+        res.json({ message: 'Order deleted successfully' });
+      });
     });
   });
 };
