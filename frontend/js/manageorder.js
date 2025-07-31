@@ -69,7 +69,7 @@ $(document).ready(function() {
     const paginatedOrders = filteredOrders.slice(startIdx, startIdx + ordersPerPage);
     
     paginatedOrders.forEach(order => {
-      const orderDate = new Date(order.created_at).toLocaleDateString();
+      const orderDate = order.date ? new Date(order.date).toLocaleDateString() : 'NULL';
       const customerName = order.user ? order.user.name : 'Guest';
       const itemCount = order.items ? order.items.reduce((sum, item) => sum + item.quantity, 0) : 0;
       

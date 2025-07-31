@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 24, 2025 at 07:26 AM
+-- Generation Time: Jul 31, 2025 at 04:55 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.1.25
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -51,17 +51,20 @@ CREATE TABLE `orderhistory` (
   `OrderHistoryID` int(11) NOT NULL,
   `OrderLineID` int(11) DEFAULT NULL,
   `UserID` int(11) DEFAULT NULL,
-  `status` enum('pending','ship','shipped','delivered') NOT NULL DEFAULT 'pending'
+  `status` enum('pending','ship','shipped','delivered') NOT NULL DEFAULT 'pending',
+  `Date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `orderhistory`
 --
 
-INSERT INTO `orderhistory` (`OrderHistoryID`, `OrderLineID`, `UserID`, `status`) VALUES
-(1, 6, 31, 'pending'),
-(2, 7, 31, 'pending'),
-(3, 8, 31, 'pending');
+INSERT INTO `orderhistory` (`OrderHistoryID`, `OrderLineID`, `UserID`, `status`, `Date`) VALUES
+(1, 6, 31, 'pending', NULL),
+(2, 7, 31, 'pending', NULL),
+(3, 8, 31, 'pending', NULL),
+(4, 9, 27, 'pending', NULL),
+(5, 10, 27, 'pending', NULL);
 
 -- --------------------------------------------------------
 
@@ -88,7 +91,12 @@ INSERT INTO `orderitem` (`OrderItemID`, `OrderLineID`, `ProductID`, `Quantity`, 
 (4, 7, 2, 1, 1.75),
 (5, 7, 1, 1, 2.50),
 (6, 8, 2, 1, 1.75),
-(7, 8, 1, 1, 2.50);
+(7, 8, 1, 1, 2.50),
+(8, 9, 1, 3, 7.50),
+(9, 9, 2, 2, 3.50),
+(10, 9, 3, 1, 4.00),
+(11, 10, 1, 3, 7.50),
+(12, 10, 2, 6, 10.50);
 
 -- --------------------------------------------------------
 
@@ -111,7 +119,9 @@ CREATE TABLE `orderline` (
 INSERT INTO `orderline` (`OrderLineID`, `Name`, `PhoneNumber`, `ZipCode`, `Address`) VALUES
 (6, 'SupremeEgg12', 9152647531, 2006, 'bakery ni winter sa kanto'),
 (7, 'andrea yago', 48764623, 2001, 'bentahan ng gulay ni yago'),
-(8, 'Kaliver', 911111111, 2050, 'sa bahay ni presto');
+(8, 'Kaliver', 911111111, 2050, 'sa bahay ni presto'),
+(9, 'Venus Page', 1234567890, 1900, 'aloha cafe'),
+(10, 'tryorder1', 1234567890, 1900, 'tryorder1');
 
 -- --------------------------------------------------------
 
@@ -133,9 +143,9 @@ CREATE TABLE `product` (
 --
 
 INSERT INTO `product` (`ProductID`, `ProdCategoryID`, `Name`, `Description`, `Price`, `Stocks`) VALUES
-(1, 1, 'Toothpaste', 'Eco-friendly toothpaste.', 2.50, 97),
-(2, 1, 'Soap Bar', 'Organic soap bar.', 1.75, 197),
-(3, 1, 'Reusable Eco Bag', 'Durable and sustainable shopping bag.', 4.00, 154),
+(1, 1, 'Toothpaste', 'Eco-friendly toothpaste.', 2.50, 91),
+(2, 1, 'Soap Bar', 'Organic soap bar.', 1.75, 189),
+(3, 1, 'Reusable Eco Bag', 'Durable and sustainable shopping bag.', 4.00, 153),
 (4, 2, 'Organic T-Shirt', 'T-shirt made from organic cotton.', 15.00, 50),
 (5, 2, 'Recycled Jean', 'Jeans made from recycled material.', 40.00, 40),
 (6, 2, 'Eco Socks', 'Socks made from bamboo fiber.', 5.00, 100),
@@ -252,23 +262,24 @@ CREATE TABLE `users` (
   `PhoneNumber` varchar(20) DEFAULT NULL,
   `Password` varchar(255) DEFAULT NULL,
   `StatusID` int(11) DEFAULT NULL,
-  `DeleteDate` datetime DEFAULT NULL
+  `DeleteDate` datetime DEFAULT NULL,
+  `sessionToken` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`UserID`, `RoleID`, `FirstName`, `LastName`, `Address`, `Email`, `PhoneNumber`, `Password`, `StatusID`, `DeleteDate`) VALUES
-(27, 1, 'Jemuel', 'Malaga', 'Western Bicutan', 'malagajemuel@gmail.com', '09999999999', '$2b$10$4pGfVRUlh6EGWP70y2Mwp.Z4XnEgp.HGrpS5Sf9/a5/3ZoZpArVgu', 1, NULL),
-(28, 1, 'Venus', 'Page', 'Hagonoy', 'mayarialunsina@gmail.com', '09611511215', '$2b$10$Q1Sh3n/HEk5BsrXnW6d.N.kbL852I/m1XPTcftQy9XLIrSiAXD752', 1, NULL),
-(29, 1, 'Mary', 'Malaga', 'Pinagsama', 'mavilovesmary@gmail.com', '2131452352341', '$2b$10$xXiJJESK2hBqUrWyP32yUeYrvRwVx703OYqZtUTPd4wg6b2a1D7hG', 1, NULL),
-(30, 2, 'Josefina', 'Alfaro', NULL, 'josefina@gmail.com', NULL, '$2b$10$dj3AcdDlSfsN8qi1ZHt.zegRK./8eLRSxo6U6ndyeoAhdZuIBO5OO', 1, '2025-07-15 13:25:04'),
-(31, 2, 'Ernesto', 'Malaga', 'Pinagsama', 'ernesto@gmail.com', '12345678', '$2b$10$CibF3jN/EKj9VMF0B6qpNOP6IzhNfAUE5zumuI9w1CduSBZK/HnTW', 1, NULL),
-(32, 2, 'Test', 'User', NULL, 'testuser@example.com', NULL, '$2b$10$oiaseUJoS0mS/becfhA82.Hd10C5aGcBYzX.LoQiuNTgsevJ6nrX2', 1, '2025-07-15 10:45:49'),
-(33, 1, 'Alvin', 'Yago', 'North Signal Village', 'alvinsymo@gmail.com', '143314141', '$2b$10$1lqG9Kp0DB46y91asAgErOq2uOFW3CN65XbLi5hk3cR3q5epz5eyK', 1, NULL),
-(34, 2, 'ewan', 'ewan', NULL, 'ewan@gmail.com', NULL, '$2b$10$P.LDw5WXePCmRouIWEWR9.L6gtlPQe3pe32AFwbQSm2cWwG.KsvVe', 1, '2025-07-14 09:54:25'),
-(35, 2, 'try1', 'register', NULL, 'tryregister1@gmail.com', NULL, '$2b$10$/jTjFYb6VY6JH73wMvtjr.Wp7lK2Bhc0hf9OO.vKAbcHgBEDKs6DC', 1, '2025-07-23 20:16:39');
+INSERT INTO `users` (`UserID`, `RoleID`, `FirstName`, `LastName`, `Address`, `Email`, `PhoneNumber`, `Password`, `StatusID`, `DeleteDate`, `sessionToken`) VALUES
+(27, 1, 'Jemuel', 'Malaga', 'Western Bicutan', 'malagajemuel@gmail.com', '09999999999', '$2b$10$4pGfVRUlh6EGWP70y2Mwp.Z4XnEgp.HGrpS5Sf9/a5/3ZoZpArVgu', 1, NULL, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI3LCJlbWFpbCI6Im1hbGFnYWplbXVlbEBnbWFpbC5jb20iLCJ'),
+(28, 1, 'Venus', 'Page', 'Hagonoy', 'mayarialunsina@gmail.com', '09611511215', '$2b$10$Q1Sh3n/HEk5BsrXnW6d.N.kbL852I/m1XPTcftQy9XLIrSiAXD752', 1, NULL, NULL),
+(29, 1, 'Mary', 'Malaga', 'Pinagsama', 'mavilovesmary@gmail.com', '2131452352341', '$2b$10$xXiJJESK2hBqUrWyP32yUeYrvRwVx703OYqZtUTPd4wg6b2a1D7hG', 1, NULL, NULL),
+(30, 2, 'Josefina', 'Alfaro', NULL, 'josefina@gmail.com', NULL, '$2b$10$dj3AcdDlSfsN8qi1ZHt.zegRK./8eLRSxo6U6ndyeoAhdZuIBO5OO', 1, '2025-07-15 13:25:04', NULL),
+(31, 2, 'Ernesto', 'Malaga', 'Pinagsama', 'ernesto@gmail.com', '12345678', '$2b$10$CibF3jN/EKj9VMF0B6qpNOP6IzhNfAUE5zumuI9w1CduSBZK/HnTW', 1, NULL, NULL),
+(32, 2, 'Test', 'User', NULL, 'testuser@example.com', NULL, '$2b$10$oiaseUJoS0mS/becfhA82.Hd10C5aGcBYzX.LoQiuNTgsevJ6nrX2', 1, '2025-07-15 10:45:49', NULL),
+(33, 1, 'Alvin', 'Yago', 'North Signal Village', 'alvinsymo@gmail.com', '143314141', '$2b$10$1lqG9Kp0DB46y91asAgErOq2uOFW3CN65XbLi5hk3cR3q5epz5eyK', 1, NULL, NULL),
+(34, 2, 'ewan', 'ewan', NULL, 'ewan@gmail.com', NULL, '$2b$10$P.LDw5WXePCmRouIWEWR9.L6gtlPQe3pe32AFwbQSm2cWwG.KsvVe', 1, '2025-07-14 09:54:25', NULL),
+(35, 2, 'try1', 'register', NULL, 'tryregister1@gmail.com', NULL, '$2b$10$/jTjFYb6VY6JH73wMvtjr.Wp7lK2Bhc0hf9OO.vKAbcHgBEDKs6DC', 1, '2025-07-23 20:16:39', NULL);
 
 --
 -- Indexes for dumped tables
@@ -358,19 +369,19 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `orderhistory`
 --
 ALTER TABLE `orderhistory`
-  MODIFY `OrderHistoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `OrderHistoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `orderitem`
 --
 ALTER TABLE `orderitem`
-  MODIFY `OrderItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `OrderItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `orderline`
 --
 ALTER TABLE `orderline`
-  MODIFY `OrderLineID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `OrderLineID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `product`

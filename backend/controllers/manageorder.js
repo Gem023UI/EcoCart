@@ -12,6 +12,7 @@ exports.getAllOrders = (req, res) => {
       ol.PhoneNumber,
       oh.status,
       oh.UserID as user_id,
+      oh.Date as order_date,
       oi.OrderItemID,
       oi.ProductID as product_id,
       oi.Quantity,
@@ -42,6 +43,7 @@ exports.getAllOrders = (req, res) => {
         phone: row.PhoneNumber,
         status: row.status,
         user_id: row.user_id,
+        date: row.order_date,
         items: []
       };
     }

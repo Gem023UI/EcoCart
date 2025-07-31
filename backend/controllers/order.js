@@ -123,8 +123,12 @@ exports.createOrder = (req, res) => {
                     // If all items are inserted successfully
                     if (completed === cart.length && !errorOccurred) {
                         // Create order history record
-                        const orderHistorySql = 'INSERT INTO orderhistory (OrderLineID, UserID) VALUES (?, ?)';
-                        db.execute(orderHistorySql, [orderLineId, userId], (err) => {
+                        const today = new Date();
+                        const formattedDate = today.toISOString().slice(0, 10);
+                        const orderHistorySql = 'INSERT INTO orderhistory (OrderLineID, UserID, Date) VALUES (?, ?, ?)';
+                        console.log('Inserting order history with date:', formattedDate);
+                        
+                        db.execute(orderHistorySql, [orderLineId, userId, formattedDate], (err) => {
                             if (err) {
                                 return db.rollback(() => {
                                     if (!res.headersSent) {
