@@ -107,10 +107,46 @@ $(document).ready(function() {
 
     // Attach event listeners
     $('.status-select').change(function() {
-      const orderId = $(this).data('order-id');
-      const newStatus = $(this).val();
+    const orderId = $(this).data('order-id');
+    const newStatus = $(this).val();
+
+    // Show confirmation modal
+    const confirmModal = `
+      <div class="modal fade" id="confirmStatusModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+              <h5 class="modal-title">Confirm Status Update</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Are you sure you want to update the status of Order #${orderId} to <strong>${capitalizeFirstLetter(newStatus)}</strong>?</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-primary" id="confirm-status-update">Yes, Update</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    $('body').append(confirmModal);
+    $('#confirmStatusModal').modal('show');
+
+    $('#confirm-status-update').click(function() {
       updateOrderStatus(orderId, newStatus);
+      $('#confirmStatusModal').modal('hide');
     });
+
+    $('#confirmStatusModal').on('hidden.bs.modal', function() {
+      $(this).remove();
+      // Optionally, reload the select to previous value if not confirmed
+      loadOrders();
+    });
+  });
     $('.view-order').click(viewOrderDetails);
     $('.delete-order').click(deleteOrder);
   }
