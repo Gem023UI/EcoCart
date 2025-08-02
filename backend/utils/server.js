@@ -1,4 +1,6 @@
 require('dotenv').config();
+console.log('GMAIL_USER:', process.env.GMAIL_ACCOUNT);
+console.log('GMAIL_PASSWORD:', process.env.GMAIL_PASSWORD ? 'Loaded' : 'Missing');
 
 const express = require('express');
 const cors = require('cors');

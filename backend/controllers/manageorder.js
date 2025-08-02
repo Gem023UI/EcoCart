@@ -1,6 +1,8 @@
 const connection = require('../config/database');
 const path = require('path');
 const fs = require('fs');
+const nodemailer = require('nodemailer');
+const PDFDocument = require('pdfkit');
 
 // GET ALL ORDERS
 exports.getAllOrders = (req, res) => {
@@ -139,7 +141,104 @@ exports.updateOrderStatus = (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: 'Order not found' });
     }
-    res.json({ message: 'Order status updated successfully' });
+
+    // Fetch order and customer details for email
+    const orderSql = `
+      SELECT 
+        ol.OrderLineID as id,
+        ol.Name as customer_name,
+        ol.Address as shipping_address,
+        ol.PhoneNumber,
+        oh.status,
+        oh.UserID as user_id,
+        oh.Date as order_date,
+        oi.OrderItemID,
+        oi.ProductID as product_id,
+        oi.Quantity,
+        oi.SubTotal as item_price,
+        p.Name as product_name,
+        p.Price as product_price,
+        u.email as customer_email
+      FROM orderline ol
+      LEFT JOIN orderitem oi ON ol.OrderLineID = oi.OrderLineID
+      LEFT JOIN product p ON oi.ProductID = p.ProductID
+      LEFT JOIN orderhistory oh ON ol.OrderLineID = oh.OrderLineID
+      LEFT JOIN users u ON oh.UserID = u.UserID
+      WHERE ol.OrderLineID = ?
+    `;
+    connection.query(orderSql, [orderId], (err, rows) => {
+      if (err || !rows || rows.length === 0) {
+        console.error('Error fetching order for email:', err);
+        // The status is already updated, so just notify about the email failure
+        return res.json({ message: 'Order status updated, but failed to send email.' });
+      }
+
+      const order = rows[0];
+      const customerEmail = order.customer_email;
+      if (!customerEmail) {
+        return res.json({ message: 'Order status updated, but customer email not found.' });
+      }
+
+      // Generate PDF
+      const PDFDocument = require('pdfkit');
+      const doc = new PDFDocument();
+      let buffers = [];
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => {
+        const pdfData = Buffer.concat(buffers);
+
+        // Send email with PDF attachment
+        const nodemailer = require('nodemailer');
+        const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'shopatecocart@gmail.com',
+            pass: 'sglc pbgi kwav heqw'
+          }
+        });
+
+        const mailOptions = {
+          from: 'shopatecocart@gmail.com',
+          to: customerEmail,
+          subject: `Order #${order.id} Status Updated to ${status}`,
+          text: `Dear ${order.customer_name},\n\nYour order status has been updated to "${status}". Please see the attached PDF for details.`,
+          attachments: [
+            {
+              filename: `Order_${order.id}.pdf`,
+              content: pdfData
+            }
+          ]
+        };
+
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error sending email:', error);
+            return res.json({ message: 'Order status updated, but failed to send email.' });
+          }
+          // Only send success after both DB update and email are done
+          res.json({ message: 'Order status updated and email sent successfully.' });
+        });
+      });
+
+      // PDF Content
+      doc.fontSize(18).text(`Order #${order.id} Details`, { align: 'center' });
+      doc.moveDown();
+      doc.fontSize(12).text(`Customer: ${order.customer_name}`);
+      doc.text(`Address: ${order.shipping_address}`);
+      doc.text(`Phone: ${order.PhoneNumber}`);
+      doc.text(`Order Date: ${order.order_date}`);
+      doc.text(`Status: ${status}`);
+      doc.moveDown();
+      doc.text('Items:', { underline: true });
+
+      rows.forEach(item => {
+        if (item.product_id) {
+          doc.text(`- ${item.product_name} (x${item.Quantity}) - ₱${item.product_price} each, Subtotal: ₱${item.item_price}`);
+        }
+      });
+
+      doc.end();
+    });
   });
 };
 
