@@ -4,6 +4,6 @@ const router = express.Router();
 const orderHistoryController = require('../controllers/orderhistory');
 
 // GET /api/orderhistory/:userId
-router.get('/:userId', orderHistoryController.getOrderHistoryByUser);
+router.get('/viewOrderHistory/:userId', orderHistoryController.getOrderHistoryByUser);
 
 module.exports = router;

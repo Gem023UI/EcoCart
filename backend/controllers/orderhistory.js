@@ -1,4 +1,3 @@
-// controllers/orderHistoryController.js
 const db = require('../config/database');
 
 exports.getOrderHistoryByUser = (req, res) => {
@@ -8,14 +7,14 @@ exports.getOrderHistoryByUser = (req, res) => {
     SELECT 
       oh.OrderHistoryID AS id,
       oh.status,
-      
+      oi.ProductID AS product_id,
       oi.Quantity AS quantity,
       oi.SubTotal AS total,
       p.Name AS product_name,
       ol.Name AS customer_name,
       ol.Address,
       ol.PhoneNumber,
-      ol.created_at,
+      oh.Date,
       ol.ZipCode
     FROM orderhistory oh
     JOIN orderline ol ON oh.OrderLineID = ol.OrderLineID

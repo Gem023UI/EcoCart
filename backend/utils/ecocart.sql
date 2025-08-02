@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 31, 2025 at 04:55 AM
+-- Generation Time: Aug 02, 2025 at 01:49 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.1.25
 
@@ -60,11 +60,9 @@ CREATE TABLE `orderhistory` (
 --
 
 INSERT INTO `orderhistory` (`OrderHistoryID`, `OrderLineID`, `UserID`, `status`, `Date`) VALUES
-(1, 6, 31, 'pending', NULL),
-(2, 7, 31, 'pending', NULL),
-(3, 8, 31, 'pending', NULL),
-(4, 9, 27, 'pending', NULL),
-(5, 10, 27, 'pending', NULL);
+(5, 10, 27, '', NULL),
+(6, 11, 27, '', '2025-07-31'),
+(9, 14, 37, 'delivered', '2025-08-02');
 
 -- --------------------------------------------------------
 
@@ -85,18 +83,11 @@ CREATE TABLE `orderitem` (
 --
 
 INSERT INTO `orderitem` (`OrderItemID`, `OrderLineID`, `ProductID`, `Quantity`, `SubTotal`) VALUES
-(1, 6, 2, 1, 1.75),
-(2, 6, 1, 1, 2.50),
-(3, 7, 3, 1, 4.00),
-(4, 7, 2, 1, 1.75),
-(5, 7, 1, 1, 2.50),
-(6, 8, 2, 1, 1.75),
-(7, 8, 1, 1, 2.50),
-(8, 9, 1, 3, 7.50),
-(9, 9, 2, 2, 3.50),
-(10, 9, 3, 1, 4.00),
 (11, 10, 1, 3, 7.50),
-(12, 10, 2, 6, 10.50);
+(12, 10, 2, 6, 10.50),
+(13, 11, 1, 1, 2.50),
+(14, 11, 2, 1, 1.75),
+(18, 14, 3, 1, 4.00);
 
 -- --------------------------------------------------------
 
@@ -117,11 +108,9 @@ CREATE TABLE `orderline` (
 --
 
 INSERT INTO `orderline` (`OrderLineID`, `Name`, `PhoneNumber`, `ZipCode`, `Address`) VALUES
-(6, 'SupremeEgg12', 9152647531, 2006, 'bakery ni winter sa kanto'),
-(7, 'andrea yago', 48764623, 2001, 'bentahan ng gulay ni yago'),
-(8, 'Kaliver', 911111111, 2050, 'sa bahay ni presto'),
-(9, 'Venus Page', 1234567890, 1900, 'aloha cafe'),
-(10, 'tryorder1', 1234567890, 1900, 'tryorder1');
+(10, 'tryorder1', 1234567890, 1900, 'tryorder1'),
+(11, 'tryorder2', 1234567890, 1900, 'tryorder2'),
+(14, 'Venus Page', 1234567890, 1900, 'Taguig City');
 
 -- --------------------------------------------------------
 
@@ -143,9 +132,9 @@ CREATE TABLE `product` (
 --
 
 INSERT INTO `product` (`ProductID`, `ProdCategoryID`, `Name`, `Description`, `Price`, `Stocks`) VALUES
-(1, 1, 'Toothpaste', 'Eco-friendly toothpaste.', 2.50, 91),
-(2, 1, 'Soap Bar', 'Organic soap bar.', 1.75, 189),
-(3, 1, 'Reusable Eco Bag', 'Durable and sustainable shopping bag.', 4.00, 153),
+(1, 1, 'Toothpaste', 'Eco-friendly toothpaste.', 2.50, 88),
+(2, 1, 'Soap Bar', 'Organic soap bar.', 1.75, 187),
+(3, 1, 'Reusable Eco Bag', 'Durable and sustainable shopping bag.', 4.00, 152),
 (4, 2, 'Organic T-Shirt', 'T-shirt made from organic cotton.', 15.00, 50),
 (5, 2, 'Recycled Jean', 'Jeans made from recycled material.', 40.00, 40),
 (6, 2, 'Eco Socks', 'Socks made from bamboo fiber.', 5.00, 100),
@@ -195,6 +184,22 @@ INSERT INTO `productimage` (`ProductImageID`, `ProductID`, `Image`) VALUES
 (59, 20, 'assets/products/Poppins-removebg-preview.png'),
 (60, 6, 'assets/products/features3.png'),
 (61, 6, 'assets/products/features4.png');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `review`
+--
+
+CREATE TABLE `review` (
+  `ReviewID` int(11) NOT NULL,
+  `OrderHistoryID` int(11) NOT NULL,
+  `ProductID` int(11) NOT NULL,
+  `UserID` int(11) NOT NULL,
+  `Description` text DEFAULT NULL,
+  `Rating` int(11) DEFAULT NULL CHECK (`Rating` between 1 and 5),
+  `ReviewDate` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -279,7 +284,9 @@ INSERT INTO `users` (`UserID`, `RoleID`, `FirstName`, `LastName`, `Address`, `Em
 (32, 2, 'Test', 'User', NULL, 'testuser@example.com', NULL, '$2b$10$oiaseUJoS0mS/becfhA82.Hd10C5aGcBYzX.LoQiuNTgsevJ6nrX2', 1, '2025-07-15 10:45:49', NULL),
 (33, 1, 'Alvin', 'Yago', 'North Signal Village', 'alvinsymo@gmail.com', '143314141', '$2b$10$1lqG9Kp0DB46y91asAgErOq2uOFW3CN65XbLi5hk3cR3q5epz5eyK', 1, NULL, NULL),
 (34, 2, 'ewan', 'ewan', NULL, 'ewan@gmail.com', NULL, '$2b$10$P.LDw5WXePCmRouIWEWR9.L6gtlPQe3pe32AFwbQSm2cWwG.KsvVe', 1, '2025-07-14 09:54:25', NULL),
-(35, 2, 'try1', 'register', NULL, 'tryregister1@gmail.com', NULL, '$2b$10$/jTjFYb6VY6JH73wMvtjr.Wp7lK2Bhc0hf9OO.vKAbcHgBEDKs6DC', 1, '2025-07-23 20:16:39', NULL);
+(35, 2, 'try1', 'register', NULL, 'tryregister1@gmail.com', NULL, '$2b$10$/jTjFYb6VY6JH73wMvtjr.Wp7lK2Bhc0hf9OO.vKAbcHgBEDKs6DC', 1, '2025-07-23 20:16:39', NULL),
+(36, 2, 'Freyr', 'Mariano', NULL, 'freyr@gmail.com', NULL, '$2b$10$c5nz4MUSRyIthVNC7Ohi2u8irq1MQ8KJuMsFlwC.IVI.ToT2Do3Su', 1, NULL, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjM2LCJlbWFpbCI6ImZyZXlyQGdtYWlsLmNvbSIsInJvbGVJZCI'),
+(37, 2, 'Venus', 'Page', NULL, 'venuspage18@gmail.com', NULL, '$2b$10$HcLkYwiOB62WHOfE7xS/E.04yncw45K7xmTXPidtY4ItSAZKUAW5y', 1, NULL, 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjM3LCJlbWFpbCI6InZlbnVzcGFnZTE4QGdtYWlsLmNvbSIsInJ');
 
 --
 -- Indexes for dumped tables
@@ -328,6 +335,15 @@ ALTER TABLE `productimage`
   ADD KEY `ProductID` (`ProductID`);
 
 --
+-- Indexes for table `review`
+--
+ALTER TABLE `review`
+  ADD PRIMARY KEY (`ReviewID`),
+  ADD KEY `OrderHistoryID` (`OrderHistoryID`),
+  ADD KEY `ProductID` (`ProductID`),
+  ADD KEY `UserID` (`UserID`);
+
+--
 -- Indexes for table `role`
 --
 ALTER TABLE `role`
@@ -369,19 +385,19 @@ ALTER TABLE `category`
 -- AUTO_INCREMENT for table `orderhistory`
 --
 ALTER TABLE `orderhistory`
-  MODIFY `OrderHistoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `OrderHistoryID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `orderitem`
 --
 ALTER TABLE `orderitem`
-  MODIFY `OrderItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `OrderItemID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `orderline`
 --
 ALTER TABLE `orderline`
-  MODIFY `OrderLineID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `OrderLineID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `product`
@@ -394,6 +410,12 @@ ALTER TABLE `product`
 --
 ALTER TABLE `productimage`
   MODIFY `ProductImageID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
+
+--
+-- AUTO_INCREMENT for table `review`
+--
+ALTER TABLE `review`
+  MODIFY `ReviewID` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `role`
@@ -417,7 +439,7 @@ ALTER TABLE `userimage`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `UserID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- Constraints for dumped tables
@@ -448,6 +470,14 @@ ALTER TABLE `product`
 --
 ALTER TABLE `productimage`
   ADD CONSTRAINT `productimage_ibfk_1` FOREIGN KEY (`ProductID`) REFERENCES `product` (`ProductID`);
+
+--
+-- Constraints for table `review`
+--
+ALTER TABLE `review`
+  ADD CONSTRAINT `review_ibfk_1` FOREIGN KEY (`OrderHistoryID`) REFERENCES `orderhistory` (`OrderHistoryID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `review_ibfk_2` FOREIGN KEY (`ProductID`) REFERENCES `product` (`ProductID`) ON DELETE CASCADE,
+  ADD CONSTRAINT `review_ibfk_3` FOREIGN KEY (`UserID`) REFERENCES `users` (`UserID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `userimage`

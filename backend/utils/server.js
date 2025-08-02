@@ -18,6 +18,7 @@ const manageOrderRoutes = require('../routes/manageorder');
 const adminRoutes = require('../routes/dashboard');
 const orderHistoryRoutes = require('../routes/orderhistory');
 const orderRoutes = require('../routes/order');
+const reviewRoutes = require('../routes/review');
 
 
 
@@ -58,6 +59,7 @@ app.use('/api/v1', manageProductRoutes);
 app.use('/api/v1', manageOrderRoutes);
 app.use('/api/v1', orderRoutes);
 app.use('/api/v1', orderHistoryRoutes);
+app.use('/api/v1', reviewRoutes);
 
 // ✅ ✅ Add this new direct route to handle productImage uploads
 app.post('/api/v1/productImage/', upload.array('images'), productController.createProduct);

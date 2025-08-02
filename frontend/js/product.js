@@ -36,6 +36,7 @@ $(document).ready(function () {
                     <div class="product-price">₱${product.price}</div>
                     <div class="product-buttons">
                         <button class="prod-btn view-btn" data-id="${product.ID || product.id}">VIEW</button>
+                        <button class="prod-btn reviews-btn" data-id="${product.ID || product.id}">REVIEWS</button>
                     </div>
                 </div>
             `;
@@ -216,6 +217,47 @@ $(document).ready(function () {
                     text: 'Failed to fetch product details. Please try again.'
                 });
             });
+    });
+
+    // Reviews button handler
+    $(document).on('click', '.reviews-btn', function () {
+    const productId = $(this).data('id');
+    $.get(`http://localhost:4000/api/v1/viewReview/product/${productId}`, function (reviews) {
+        let reviewsHtml = '';
+        if (!reviews.length) {
+        reviewsHtml = '<div class="text-muted text-center">No reviews yet.</div>';
+        } else {
+        reviewsHtml = reviews.map(r => `
+            <div class="border rounded p-2 mb-2">
+            <div class="d-flex justify-content-between align-items-center">
+                <span><strong>${r.user_name}</strong> <small class="text-muted">${new Date(r.ReviewDate).toLocaleString()}</small></span>
+                <span>${'★'.repeat(r.Rating)}${'☆'.repeat(5 - r.Rating)}</span>
+            </div>
+            <div class="mt-1">${r.Description}</div>
+            </div>
+        `).join('');
+        }
+        const modalHtml = `
+        <div class="modal fade" id="reviewsModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title">Product Reviews</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">${reviewsHtml}</div>
+            </div>
+            </div>
+        </div>
+        `;
+        $('body').append(modalHtml);
+        $('#reviewsModal').modal('show');
+        $('#reviewsModal').on('hidden.bs.modal', function () {
+        $(this).remove();
+        });
+    });
     });
 
     // Buy Now button handler
