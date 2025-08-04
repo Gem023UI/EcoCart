@@ -574,3 +574,41 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: #218838;
 }
+
+.filter-controls {
+    background-color: #f8f9fa;
+    padding: 20px 0;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.filter-controls .form-group label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+}
+
+.filter-controls .form-control {
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.filter-controls .form-control:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+}
+
+#resultsCounter {
+    font-size: 14px;
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filter-controls .col-md-3,
+    .filter-controls .col-md-4,
+    .filter-controls .col-md-2 {
+        margin-bottom: 15px;
+    }
+}

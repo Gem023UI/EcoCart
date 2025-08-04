@@ -51,21 +51,20 @@ $(document).ready(function () {
     const url = 'http://localhost:4000/';
 
     // Initialize DataTable only after successful authentication
-    $('#ptable').DataTable({
+    var table = $('#ptable').DataTable({
         ajax: {
             url: `${url}api/v1/productTable/`,
             dataSrc: "rows",
             error: function(xhr, error, code) {
                 console.error('DataTable AJAX error:', error, code);
                 if (xhr.status === 401) {
-                    // Token might be expired, redirect to login
                     Swal.fire({
                         icon: 'warning',
                         title: 'Session Expired',
                         text: 'Your session has expired. Please log in again.',
                         showConfirmButton: true
                     }).then(() => {
-                        sessionStorage.clear(); // Clear invalid session data
+                        sessionStorage.clear();
                         window.location.href = 'loginregister.html';
                     });
                 }
@@ -116,6 +115,24 @@ $(document).ready(function () {
                 }
             }
         ],
+    });
+
+    // Category filter functionality
+    $('#categoryFilter').on('change', function() {
+        var selectedCategory = $(this).val();
+        table.column(1).search(selectedCategory).draw();
+    });
+
+    // Search functionality
+    $('#searchProduct').on('keyup', function() {
+        table.search($(this).val()).draw();
+    });
+
+    // Clear filters
+    $('#clearFilters').on('click', function() {
+        $('#categoryFilter').val('');
+        $('#searchProduct').val('');
+        table.search('').columns().search('').draw();
     });
 
     // Helper function to get auth headers

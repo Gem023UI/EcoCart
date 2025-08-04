@@ -1,4 +1,6 @@
 const apiUrl = 'http://localhost:4000/api/v1/userTable';
+let allUsers = []; // Store all users for filtering
+let filteredUsers = []; // Store filtered users
 
 $(document).ready(function() {
     console.log('Document ready - checking authentication...'); // Debug log
@@ -95,32 +97,11 @@ function loadUsers() {
     .done(function(users) {
         console.log('Users loaded:', users); // Debug log
         
-        const tbody = $('#usersTable tbody');
-        tbody.empty();
+        // Store all users globally for filtering
+        allUsers = users || [];
+        filteredUsers = [...allUsers]; // Initialize filtered users
         
-        if (!users || users.length === 0) {
-            tbody.append('<tr><td colspan="9" class="text-center">No users found</td></tr>');
-            return;
-        }
-        
-        users.forEach(user => {
-            tbody.append(`
-                <tr>
-                    <td>${user.UserID}</td>
-                    <td>${user.FirstName || ''}</td>
-                    <td>${user.LastName || ''}</td>
-                    <td>${user.Address || 'N/A'}</td>
-                    <td>${user.Email || ''}</td>
-                    <td>${user.PhoneNumber || 'N/A'}</td>
-                    <td>${user.RoleID == 1 ? 'Admin' : user.RoleID == 2 ? 'Customer' : 'Unknown'}</td>
-                    <td>${user.StatusID == 1 ? 'Active' : user.StatusID == 2 ? 'Deactivated' : 'Unknown'}</td>
-                    <td class="table-actions">
-                        <button class="btn btn-sm btn-info edit-btn" data-id="${user.UserID}">Edit</button>
-                        <button class="btn btn-sm btn-danger delete-btn" data-id="${user.UserID}">Delete</button>
-                    </td>
-                </tr>
-            `);
-        });
+        renderUsersTable(filteredUsers);
     })
     .fail(function(xhr, status, error) {
         console.error('Error loading users:', error);
@@ -151,6 +132,35 @@ function loadUsers() {
             title: 'Error',
             text: 'Failed to load users. Please check your connection and try again.'
         });
+    });
+}
+
+function renderUsersTable(users) {
+    const tbody = $('#usersTable tbody');
+    tbody.empty();
+    
+    if (!users || users.length === 0) {
+        tbody.append('<tr><td colspan="9" class="text-center">No users found</td></tr>');
+        return;
+    }
+    
+    users.forEach(user => {
+        tbody.append(`
+            <tr>
+                <td>${user.UserID}</td>
+                <td>${user.FirstName || ''}</td>
+                <td>${user.LastName || ''}</td>
+                <td>${user.Address || 'N/A'}</td>
+                <td>${user.Email || ''}</td>
+                <td>${user.PhoneNumber || 'N/A'}</td>
+                <td>${user.RoleID == 1 ? 'Admin' : user.RoleID == 2 ? 'Customer' : 'Unknown'}</td>
+                <td>${user.StatusID == 1 ? 'Active' : user.StatusID == 2 ? 'Deactivated' : 'Unknown'}</td>
+                <td class="table-actions">
+                    <button class="btn btn-sm btn-info edit-btn" data-id="${user.UserID}">Edit</button>
+                    <button class="btn btn-sm btn-danger delete-btn" data-id="${user.UserID}">Delete</button>
+                </td>
+            </tr>
+        `);
     });
 }
 
@@ -336,5 +346,45 @@ function initializeUserManagement() {
                 window.location.href = 'loginregister.html';
             }
         }
+    });
+
+    // Filter functionality
+    function applyFilters() {
+        const roleFilter = $('#roleFilter').val();
+        const statusFilter = $('#statusFilter').val();
+        const searchQuery = $('#searchUser').val().toLowerCase();
+        
+        filteredUsers = allUsers.filter(user => {
+            const matchesRole = roleFilter === '' || user.RoleID.toString() === roleFilter;
+            const matchesStatus = statusFilter === '' || user.StatusID.toString() === statusFilter;
+            const matchesSearch = searchQuery === '' || 
+                (user.FirstName && user.FirstName.toLowerCase().includes(searchQuery)) ||
+                (user.LastName && user.LastName.toLowerCase().includes(searchQuery)) ||
+                (user.Email && user.Email.toLowerCase().includes(searchQuery)) ||
+                (user.PhoneNumber && user.PhoneNumber.toLowerCase().includes(searchQuery)) ||
+                (user.Address && user.Address.toLowerCase().includes(searchQuery));
+            
+            return matchesRole && matchesStatus && matchesSearch;
+        });
+        
+        renderUsersTable(filteredUsers);
+    }
+
+    // Role filter change handler
+    $('#roleFilter').on('change', applyFilters);
+    
+    // Status filter change handler
+    $('#statusFilter').on('change', applyFilters);
+    
+    // Search input handler
+    $('#searchUser').on('keyup', applyFilters);
+    
+    // Clear filters handler
+    $('#clearFilters').on('click', function() {
+        $('#roleFilter').val('');
+        $('#statusFilter').val('');
+        $('#searchUser').val('');
+        filteredUsers = [...allUsers];
+        renderUsersTable(filteredUsers);
     });
 }

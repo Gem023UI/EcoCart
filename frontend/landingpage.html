@@ -40,6 +40,58 @@
   
   <section class="products-section">
     <h2>Shop Through Varities of Eco-Friendly Products</h2>
+
+    <!-- Filter Controls -->
+    <div class="filter-controls mb-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="categoryFilter">
+                            <i class="fas fa-filter"></i> Category
+                        </label>
+                        <select class="form-control" id="categoryFilter">
+                            <option value="">All Categories</option>
+                            <option value="Essentials">Essentials</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Cutlery">Cutlery</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label for="priceFilter">
+                            <i class="fas fa-peso-sign"></i> Price Range
+                        </label>
+                        <select class="form-control" id="priceFilter">
+                            <option value="">All Prices</option>
+                            <option value="0-100">₱0 - ₱100</option>
+                            <option value="101-500">₱101 - ₱500</option>
+                            <option value="501-1000">₱501 - ₱1000</option>
+                            <option value="1000+">₱1000+</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="searchProduct">
+                            <i class="fas fa-search"></i> Search Products
+                        </label>
+                        <input type="text" class="form-control" id="searchProduct" placeholder="Search by name or description...">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label>&nbsp;</label><br>
+                        <button type="button" class="btn btn-secondary" id="clearFilters">
+                            <i class="fas fa-times"></i> Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Products Grid -->
     <div id="products-container" class="products-grid"></div>
   </section>
 

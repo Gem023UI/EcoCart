@@ -1,3 +1,6 @@
+let allProducts = []; // Store all products for filtering
+let filteredProducts = []; // Store filtered products
+
 $(document).ready(function () {
     const apiUrl = 'http://localhost:4000/api/v1/product';
 
@@ -89,7 +92,11 @@ $(document).ready(function () {
         method: 'GET',
         dataType: 'json',
         success: function (data) {
-            renderProducts(data.products);
+            // Store all products globally for filtering
+            allProducts = data.products || [];
+            filteredProducts = [...allProducts]; // Initialize filtered products
+            renderProducts(filteredProducts);
+            console.log('Products loaded:', allProducts.length);
         },
         error: function (xhr, status, error) {
             console.error('Error loading products:', error);
@@ -414,4 +421,80 @@ $(document).ready(function () {
     $(document).ready(function() {
         $('#header').load('./header.html');
     });
+
+    // Filter functionality
+function applyFilters() {
+    const categoryFilter = $('#categoryFilter').val();
+    const priceFilter = $('#priceFilter').val();
+    const searchQuery = $('#searchProduct').val().toLowerCase();
+    
+    filteredProducts = allProducts.filter(product => {
+        // Category filter
+        const matchesCategory = categoryFilter === '' || 
+            (product.category && product.category.toLowerCase() === categoryFilter.toLowerCase());
+        
+        // Price filter
+        let matchesPrice = true;
+        if (priceFilter !== '') {
+            const price = parseFloat(product.price) || 0;
+            switch (priceFilter) {
+                case '0-100':
+                    matchesPrice = price >= 0 && price <= 100;
+                    break;
+                case '101-500':
+                    matchesPrice = price >= 101 && price <= 500;
+                    break;
+                case '501-1000':
+                    matchesPrice = price >= 501 && price <= 1000;
+                    break;
+                case '1000+':
+                    matchesPrice = price > 1000;
+                    break;
+            }
+        }
+        
+        // Search filter
+        const matchesSearch = searchQuery === '' || 
+            (product.name && product.name.toLowerCase().includes(searchQuery)) ||
+            (product.description && product.description.toLowerCase().includes(searchQuery));
+        
+        return matchesCategory && matchesPrice && matchesSearch;
+    });
+    
+    renderProducts(filteredProducts);
+    
+    // Show results count
+    const resultsText = filteredProducts.length === allProducts.length 
+        ? `Showing all ${filteredProducts.length} products`
+        : `Showing ${filteredProducts.length} of ${allProducts.length} products`;
+    
+    // Update or create results counter
+    if ($('#resultsCounter').length === 0) {
+        $('#products-container').before(`<div id="resultsCounter" class="text-muted mb-3 text-center"></div>`);
+    }
+    $('#resultsCounter').text(resultsText);
+}
+
+// Category filter change handler
+$('#categoryFilter').on('change', applyFilters);
+
+// Price filter change handler
+$('#priceFilter').on('change', applyFilters);
+
+// Search input handler with debounce for better performance
+let searchTimeout;
+$('#searchProduct').on('keyup', function() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(applyFilters, 300); // 300ms delay
+});
+
+// Clear filters handler
+$('#clearFilters').on('click', function() {
+    $('#categoryFilter').val('');
+    $('#priceFilter').val('');
+    $('#searchProduct').val('');
+    filteredProducts = [...allProducts];
+    renderProducts(filteredProducts);
+    $('#resultsCounter').text(`Showing all ${allProducts.length} products`);
+});
 });
