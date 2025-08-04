@@ -36,7 +36,7 @@
       referrerpolicy="no-referrer"
     ></script>
 
-    <script src="../frontend/js/manageuser.js"></script>
+    <script src="./js/manageuser.js"></script>
 
     <title>EcoCart - Admin Dashboard</title>
 </head>
@@ -154,6 +154,47 @@
       if (!e.target.closest('.user-dropdown')) {
         userDropdownContent.classList.remove('show');
       }
+    });
+  </script>
+
+  <script>
+   const userId = sessionStorage.getItem('userId');
+  if (!userId) {
+  Swal.fire({
+    icon: 'warning',
+    text: 'You must be logged in to access this page.',
+    confirmButtonText: 'OK'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = 'loginregister.html';
+    }
+  });
+  
+}
+  </script>
+
+  <script>
+    function requireAdmin() {
+      // Get user data from sessionStorage (assuming you store these during login)
+      const userId = sessionStorage.getItem('userId');
+      const roleId = sessionStorage.getItem('roleId'); // Should be '1' for Admin based on your database
+
+      if (!userId || roleId !== '1') { // Check if roleId is 1 (Admin)
+        Swal.fire({
+          icon: 'error',
+          title: 'Access Denied',
+          text: 'You must be an administrator to access this page.',
+          showConfirmButton: true
+        }).then(() => {
+          window.location.href = 'loginregister.html'; // Redirect to login page
+        });
+        return false;
+      }
+      return true;
+    }
+
+    $(document).ready(function () {
+      requireAdmin(); // Call this on page load
     });
   </script>
 

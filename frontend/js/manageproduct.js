@@ -1,4 +1,51 @@
 $(document).ready(function () {
+    // ✅ Comprehensive Admin authentication check
+    function requireAdmin() {
+        const userId = sessionStorage.getItem('userId');
+        const authToken = sessionStorage.getItem('authToken');
+        const roleId = sessionStorage.getItem('roleId');
+        
+        // Check if user is logged in
+        if (!userId || !authToken) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Login Required',
+                text: 'You must be logged in to access this page.',
+                showConfirmButton: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then(() => {
+                window.location.href = 'loginregister.html';
+            });
+            return false;
+        }
+        
+        // Check if user is admin (roleId should be '1' or 1)
+        if (roleId !== '1' && parseInt(roleId) !== 1) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Access Denied',
+                text: 'Administrator privileges required to access this page.',
+                showConfirmButton: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then(() => {
+                window.location.href = 'loginregister.html';
+            });
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Execute admin check first
+    if (!requireAdmin()) {
+        return; // Stop execution if not authorized
+    }
+    
+    // Load admin header only after successful authentication
+    $('#adminheader').load('./adminheader.html');
+    
     const url = 'http://localhost:4000/'
 
     $('#ptable').DataTable({
@@ -295,9 +342,5 @@ $(document).ready(function () {
     $("#productModal").on('hidden.bs.modal', function () {
         $('#productImageFiles').val('');
         $('#imagePreview').empty();
-    });
-
-    $(document).ready(function() {
-        $('#adminheader').load('./adminheader.html');
     });
 });

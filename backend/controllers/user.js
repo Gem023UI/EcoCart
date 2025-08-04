@@ -131,56 +131,117 @@ const loginUser = (req, res) => {
   });
 };
 
-const updateUser = (req, res) => {
-  // {
-  //   "name": "steve",
-  //   "email": "steve@gmail.com",
-  //   "password": "password"
-  // }
-  console.log(req.body, req.file)
-  const { title, fname, lname, addressline, town, zipcode, phone, userId,} = req.body;
+// GET USER PROFILE - fetch current user's profile data
+const getUserProfile = (req, res) => {
+  const userId = req.user?.UserID;
 
-  if (req.file) {
-    image = req.file.path.replace(/\\/g, "/");
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is missing from request' });
   }
-  //     INSERT INTO users(user_id, username, email)
-  //   VALUES(1, 'john_doe', 'john@example.com')
-  // ON DUPLICATE KEY UPDATE email = 'john@example.com';
-  const userSql = `
-  INSERT INTO customer 
-    (title, fname, lname, addressline, town, zipcode, phone, image_path, user_id)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  ON DUPLICATE KEY UPDATE 
-    title = VALUES(title),
-    fname = VALUES(fname),
-    lname = VALUES(lname),
-    addressline = VALUES(addressline),
-    town = VALUES(town),
-    zipcode = VALUES(zipcode),
-    phone = VALUES(phone),
-    image_path = VALUES(image_path)`;
-    const params = [title, fname, lname, addressline, town, zipcode, phone, image, userId];
 
-  try {
-    connection.execute(userSql, params, (err, result) => {
-      if (err instanceof Error) {
-        console.log(err);
+  const sql = `
+    SELECT UserID, FirstName, LastName, Email, Address, PhoneNumber, RoleID, StatusID
+    FROM users 
+    WHERE UserID = ? AND RoleID = 2
+  `;
 
-        return res.status(401).json({
-          error: err
-        });
+  connection.execute(sql, [userId], (err, results) => {
+    if (err) {
+      console.error("Error fetching user profile:", err);
+      return res.status(500).json({
+        error: "Database error occurred.",
+        details: err.message
+      });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    const user = results[0];
+    
+    return res.status(200).json({
+      success: true,
+      message: "Profile retrieved successfully",
+      user: {
+        UserID: user.UserID,
+        FirstName: user.FirstName,
+        LastName: user.LastName,
+        Email: user.Email,
+        Address: user.Address,
+        PhoneNumber: user.PhoneNumber,
+        RoleID: user.RoleID,
+        StatusID: user.StatusID
       }
-
-      return res.status(200).json({
-        success: true,
-        message: 'profile updated',
-        result
-      })
     });
-  } catch (error) {
-    console.log(error)
+  });
+};
+
+// CUSTOMER PROFILE UPDATE - allows customers to update their own profile
+const updateUser = (req, res) => {
+  const { firstname, lastname, address, email, phonenumber } = req.body;
+  const userId = req.user?.UserID;
+
+  if (!userId) {
+    return res.status(400).json({ error: 'User ID is missing from request' });
   }
 
+  if (!firstname && !lastname && !address && !email && !phonenumber) {
+    return res.status(400).json({
+      error: "At least one field must be provided."
+    });
+  }
+
+  const updateFields = [];
+  const params = [];
+
+  if (firstname) {
+    updateFields.push("FirstName = ?");
+    params.push(firstname);
+  }
+
+  if (lastname) {
+    updateFields.push("LastName = ?");
+    params.push(lastname);
+  }
+
+  if (address) {
+    updateFields.push("Address = ?");
+    params.push(address);
+  }
+
+  if (email) {
+    updateFields.push("Email = ?");
+    params.push(email);
+  }
+
+  if (phonenumber) {
+    updateFields.push("PhoneNumber = ?");
+    params.push(phonenumber);
+  }
+
+  params.push(userId);
+
+  const sql = `UPDATE users SET ${updateFields.join(", ")} WHERE UserID = ? AND RoleID = 2`;
+
+  connection.execute(sql, params, (err, result) => {
+    if (err) {
+      console.error("Error updating user:", err);
+      return res.status(500).json({
+        error: "Database error occurred.",
+        details: err.message
+      });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "User not found or no changes made." });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User profile updated successfully."
+    });
+  });
 };
 
 const deactivateUser = (req, res) => {
@@ -209,4 +270,4 @@ const deactivateUser = (req, res) => {
   });
 };
 
-module.exports = { registerUser, loginUser, updateUser, deactivateUser };
+module.exports = { registerUser, loginUser, getUserProfile, updateUser, deactivateUser };

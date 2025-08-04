@@ -10,7 +10,7 @@ $(document).ready(function () {
                 text: 'You must be logged in to access this page.',
                 showConfirmButton: true
             }).then(() => {
-                window.location.href = 'loginregister.html';
+                window.location.href = './loginregister.html';
             });
             return;
         }
@@ -151,7 +151,7 @@ $(document).ready(function () {
             // Place this in your frontend login AJAX success handler
             if (data.success) {
                 // Store token as adminToken or userToken based on tokenKey
-                sessionStorage.setItem(data.tokenKey, data.token);
+                sessionStorage.setItem('authToken', data.token);
                 // Also store userId and roleId for reference
                 sessionStorage.setItem('userId', data.user.userId);
                 sessionStorage.setItem('roleId', data.user.roleId);

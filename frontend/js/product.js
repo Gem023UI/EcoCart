@@ -1,6 +1,43 @@
 $(document).ready(function () {
     const apiUrl = 'http://localhost:4000/api/v1/product';
 
+    // Authentication helper functions
+    const getAuthToken = () => {
+        return localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    };
+
+    const isUserLoggedIn = () => {
+        const token = getAuthToken();
+        if (!token) return false;
+        
+        try {
+            // Basic token validation - check if it's not expired
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const currentTime = Date.now() / 1000;
+            return payload.exp > currentTime;
+        } catch (error) {
+            console.error('Token validation error:', error);
+            return false;
+        }
+    };
+
+    const redirectToLogin = () => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Authentication Required',
+            text: 'Please log in to continue',
+            showCancelButton: true,
+            confirmButtonText: 'Go to Login',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Store current page for redirect after login
+                localStorage.setItem('redirectAfterLogin', window.location.href);
+                window.location.href = 'loginregister.html'; // Adjust path as needed
+            }
+        });
+    };
+
     // Add shared cart functions if they don't exist globally
     const getCart = () => {
         try {
@@ -221,92 +258,54 @@ $(document).ready(function () {
 
     // Reviews button handler
     $(document).on('click', '.reviews-btn', function () {
-    const productId = $(this).data('id');
-    $.get(`http://localhost:4000/api/v1/viewReview/product/${productId}`, function (reviews) {
-        let reviewsHtml = '';
-        if (!reviews.length) {
-        reviewsHtml = '<div class="text-muted text-center">No reviews yet.</div>';
-        } else {
-        reviewsHtml = reviews.map(r => `
-            <div class="border rounded p-2 mb-2">
-            <div class="d-flex justify-content-between align-items-center">
-                <span><strong>${r.user_name}</strong> <small class="text-muted">${new Date(r.ReviewDate).toLocaleString()}</small></span>
-                <span>${'★'.repeat(r.Rating)}${'☆'.repeat(5 - r.Rating)}</span>
-            </div>
-            <div class="mt-1">${r.Description}</div>
-            </div>
-        `).join('');
-        }
-        const modalHtml = `
-        <div class="modal fade" id="reviewsModal" tabindex="-1" role="dialog">
-            <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                <h5 class="modal-title">Product Reviews</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+        const productId = $(this).data('id');
+        $.get(`http://localhost:4000/api/v1/viewReview/product/${productId}`, function (reviews) {
+            let reviewsHtml = '';
+            if (!reviews.length) {
+                reviewsHtml = '<div class="text-muted text-center">No reviews yet.</div>';
+            } else {
+                reviewsHtml = reviews.map(r => `
+                    <div class="border rounded p-2 mb-2">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span><strong>${r.user_name}</strong> <small class="text-muted">${new Date(r.ReviewDate).toLocaleString()}</small></span>
+                            <span>${'★'.repeat(r.Rating)}${'☆'.repeat(5 - r.Rating)}</span>
+                        </div>
+                        <div class="mt-1">${r.Description}</div>
+                    </div>
+                `).join('');
+            }
+            const modalHtml = `
+                <div class="modal fade" id="reviewsModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Product Reviews</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">${reviewsHtml}</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="modal-body">${reviewsHtml}</div>
-            </div>
-            </div>
-        </div>
-        `;
-        $('body').append(modalHtml);
-        $('#reviewsModal').modal('show');
-        $('#reviewsModal').on('hidden.bs.modal', function () {
-        $(this).remove();
+            `;
+            $('body').append(modalHtml);
+            $('#reviewsModal').modal('show');
+            $('#reviewsModal').on('hidden.bs.modal', function () {
+                $(this).remove();
+            });
         });
     });
-    });
 
-    // Buy Now button handler
-    $(document).on('click', '#buyNowBtn', function(e) {
-        e.preventDefault();
-        
-        if (!window.currentProduct) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Product data not available'
-            });
-            return;
-        }
-        
-        // Check stock availability
-        const stockCount = parseInt(window.currentProduct.Stocks || 0);
-        if (stockCount <= 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Out of Stock',
-                text: 'This product is currently out of stock'
-            });
-            return;
-        }
-        
-        // Buy now logic here
-        // You can redirect to checkout page or implement immediate purchase
-        console.log('Buy now clicked for:', window.currentProduct);
-        
-        Swal.fire({
-            icon: 'info',
-            title: 'Proceeding to Checkout',
-            text: 'Redirecting to checkout page...',
-            showConfirmButton: false,
-            timer: 1500
-        }).then(() => {
-            // Redirect to checkout page or implement your buy now logic
-            // window.location.href = '/checkout.html';
-            console.log('Redirect to checkout page');
-        });
-        
-        // Close modal
-        $('#productDetailsModal').modal('hide');
-    });
-
-    // Add to Cart button handler
+    // Add to Cart button handler with authentication
     $(document).on('click', '#addToCartBtn', function (e) {
         e.preventDefault();
+
+        // Check authentication first
+        if (!isUserLoggedIn()) {
+            redirectToLogin();
+            return;
+        }
 
         if (!window.currentProduct) {
             Swal.fire({
@@ -324,6 +323,16 @@ $(document).ready(function () {
         const product = window.currentProduct;
         let cart = getCart();
         const availableStock = parseInt(product.Stocks) || 0;
+
+        // Check stock availability
+        if (qty > availableStock) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Stock Limit',
+                text: `Only ${availableStock} in stock.`
+            });
+            return;
+        }
 
         // Only compare by ProductID
         let existingItemIndex = cart.findIndex(item => item.item_id === productId);
@@ -345,15 +354,6 @@ $(document).ready(function () {
             cart[existingItemIndex].quantity = newQuantity;
             console.log('Updated quantity:', cart[existingItemIndex]);
         } else {
-            if (qty > availableStock) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Stock Limit',
-                    text: `Only ${availableStock} in stock.`
-                });
-                return;
-            }
-
             // Add new item
             const newItem = {
                 item_id: productId,
@@ -367,14 +367,14 @@ $(document).ready(function () {
             console.log('New item added:', newItem);
         }
 
-        // Save updated cart
+        // Save updated cart to localStorage
         saveCart(cart);
 
         // Update UI cart count
         const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
         $('#itemCount').text(totalItems).css('display', 'block');
 
-        // Feedback
+        // Close modal and show success feedback
         $('#productDetailsModal').modal('hide');
 
         Swal.fire({

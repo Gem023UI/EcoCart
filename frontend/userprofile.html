@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.min.css" rel="stylesheet">
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .profile-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-top: -50px;
+            position: relative;
+            z-index: 1;
+        }
+        .info-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            color: #6c757d;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .info-value {
+            color: #333;
+            font-size: 1.1rem;
+        }
+        .edit-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        .save-btn {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            color: white;
+            font-weight: 600;
+        }
+        .cancel-btn {
+            background: linear-gradient(45deg, #6c757d, #495057);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 30px;
+            color: white;
+            font-weight: 600;
+        }
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="landingpage.html">
+                <i class="fas fa-store me-2"></i>Shop
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="landingpage.html">
+                    <i class="fas fa-home me-1"></i>Home
+                </a>
+                <a class="nav-link active" href="profile.html">
+                    <i class="fas fa-user me-1"></i>Profile
+                </a>
+                <a class="nav-link" href="#" id="logout-link">
+                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="container text-center">
+            <img src="https://via.placeholder.com/120/667eea/ffffff?text=User" alt="Profile Avatar" class="profile-avatar" id="profileAvatar">
+            <h2 class="mt-3 mb-1" id="profileName">Loading...</h2>
+            <p class="mb-0" id="profileEmail">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Profile Content -->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="profile-card p-4">
+                    <!-- View Mode -->
+                    <div id="viewMode">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4><i class="fas fa-user-circle me-2"></i>Profile Information</h4>
+                            <button class="btn edit-btn" id="editProfileBtn">
+                                <i class="fas fa-edit me-2"></i>Edit Profile
+                            </button>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <i class="fas fa-user me-2"></i>First Name
+                                    </div>
+                                    <div class="info-value" id="displayFirstName">-</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <i class="fas fa-user me-2"></i>Last Name
+                                    </div>
+                                    <div class="info-value" id="displayLastName">-</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <i class="fas fa-envelope me-2"></i>Email Address
+                                    </div>
+                                    <div class="info-value" id="displayEmail">-</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <i class="fas fa-phone me-2"></i>Phone Number
+                                    </div>
+                                    <div class="info-value" id="displayPhone">Not provided</div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="info-item">
+                                    <div class="info-label">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Address
+                                    </div>
+                                    <div class="info-value" id="displayAddress">Not provided</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Edit Mode -->
+                    <div id="editMode" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4><i class="fas fa-edit me-2"></i>Edit Profile</h4>
+                        </div>
+
+                        <form id="profileUpdateForm">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="editFirstName" class="form-label">
+                                        <i class="fas fa-user me-2"></i>First Name
+                                    </label>
+                                    <input type="text" class="form-control" id="editFirstName" name="firstname" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="editLastName" class="form-label">
+                                        <i class="fas fa-user me-2"></i>Last Name
+                                    </label>
+                                    <input type="text" class="form-control" id="editLastName" name="lastname" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="editEmail" class="form-label">
+                                        <i class="fas fa-envelope me-2"></i>Email Address
+                                    </label>
+                                    <input type="email" class="form-control" id="editEmail" name="email" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="editPhone" class="form-label">
+                                        <i class="fas fa-phone me-2"></i>Phone Number
+                                    </label>
+                                    <input type="tel" class="form-control" id="editPhone" name="phonenumber" placeholder="Optional">
+                                </div>
+                                <div class="col-12 mb-4">
+                                    <label for="editAddress" class="form-label">
+                                        <i class="fas fa-map-marker-alt me-2"></i>Address
+                                    </label>
+                                    <textarea class="form-control" id="editAddress" name="address" rows="3" placeholder="Enter your complete address (Optional)"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <button type="button" class="btn cancel-btn me-2" id="cancelEditBtn">
+                                    <i class="fas fa-times me-2"></i>Cancel
+                                </button>
+                                <button type="submit" class="btn save-btn">
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.12/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            const url = 'http://localhost:4000/';
+            let currentUserData = {};
+
+            // Check authentication
+            const checkAuth = () => {
+                const userId = sessionStorage.getItem('userId');
+                const userToken = sessionStorage.getItem('userToken');
+                
+                if (!userId || !userToken) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Authentication Required',
+                        text: 'You must be logged in to access this page.',
+                        showConfirmButton: true
+                    }).then(() => {
+                        window.location.href = 'loginregister.html';
+                    });
+                    return false;
+                }
+                return true;
+            };
+
+            // Show loading
+            const showLoading = () => {
+                $('#loadingOverlay').show();
+            };
+
+            // Hide loading
+            const hideLoading = () => {
+                $('#loadingOverlay').hide();
+            };
+
+            // Load user profile data
+            const loadUserProfile = () => {
+                if (!checkAuth()) return;
+
+                showLoading();
+                const userToken = sessionStorage.getItem('userToken');
+                
+                $.ajax({
+                    method: "GET",
+                    url: `${url}api/v1/user-profile`,
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    },
+                    success: function(data) {
+                        hideLoading();
+                        if (data.success) {
+                            currentUserData = data.user;
+                            displayUserProfile(data.user);
+                        }
+                    },
+                    error: function(xhr) {
+                        hideLoading();
+                        console.error('Error loading profile:', xhr);
+                        
+                        if (xhr.status === 401) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Session Expired',
+                                text: 'Please log in again.',
+                            }).then(() => {
+                                sessionStorage.clear();
+                                window.location.href = 'loginregister.html';
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Failed to load profile information.',
+                            });
+                        }
+                    }
+                });
+            };
+
+            // Display user profile
+            const displayUserProfile = (user) => {
+                // Update header
+                $('#profileName').text(`${user.FirstName || ''} ${user.LastName || ''}`.trim());
+                $('#profileEmail').text(user.Email || '');
+                
+                // Update profile info
+                $('#displayFirstName').text(user.FirstName || '-');
+                $('#displayLastName').text(user.LastName || '-');
+                $('#displayEmail').text(user.Email || '-');
+                $('#displayPhone').text(user.PhoneNumber || 'Not provided');
+                $('#displayAddress').text(user.Address || 'Not provided');
+            };
+
+            // Switch to edit mode
+            $('#editProfileBtn').on('click', function() {
+                // Populate edit form with current data
+                $('#editFirstName').val(currentUserData.FirstName || '');
+                $('#editLastName').val(currentUserData.LastName || '');
+                $('#editEmail').val(currentUserData.Email || '');
+                $('#editPhone').val(currentUserData.PhoneNumber || '');
+                $('#editAddress').val(currentUserData.Address || '');
+                
+                // Switch views
+                $('#viewMode').hide();
+                $('#editMode').show();
+            });
+
+            // Cancel edit
+            $('#cancelEditBtn').on('click', function() {
+                $('#editMode').hide();
+                $('#viewMode').show();
+            });
+
+            // Handle profile update
+            $('#profileUpdateForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                if (!checkAuth()) return;
+
+                const formData = {
+                    firstname: $('#editFirstName').val().trim(),
+                    lastname: $('#editLastName').val().trim(),
+                    email: $('#editEmail').val().trim(),
+                    phonenumber: $('#editPhone').val().trim(),
+                    address: $('#editAddress').val().trim()
+                };
+
+                // Validation
+                if (!formData.firstname || !formData.lastname || !formData.email) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validation Error',
+                        text: 'First name, last name, and email are required.',
+                    });
+                    return;
+                }
+
+                // Email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(formData.email)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Email',
+                        text: 'Please enter a valid email address.',
+                    });
+                    return;
+                }
+
+                showLoading();
+                const userToken = sessionStorage.getItem('userToken');
+
+                $.ajax({
+                    method: "POST",
+                    url: `${url}api/v1/update-profile`,
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    data: JSON.stringify(formData),
+                    success: function(data) {
+                        hideLoading();
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Your profile has been updated successfully.',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                            
+                            // Update current user data
+                            currentUserData = {
+                                ...currentUserData,
+                                FirstName: formData.firstname,
+                                LastName: formData.lastname,
+                                Email: formData.email,
+                                PhoneNumber: formData.phonenumber,
+                                Address: formData.address
+                            };
+                            
+                            // Update display and switch back to view mode
+                            displayUserProfile(currentUserData);
+                            $('#editMode').hide();
+                            $('#viewMode').show();
+                        }
+                    },
+                    error: function(xhr) {
+                        hideLoading();
+                        console.error('Update error:', xhr);
+                        
+                        let errorMessage = 'Failed to update profile. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        }
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Update Failed',
+                            text: errorMessage,
+                        });
+                    }
+                });
+            });
+
+            // Logout functionality
+            $('#logout-link').on('click', function(e) {
+                e.preventDefault();
+                
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'Do you want to logout?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, logout'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        sessionStorage.clear();
+                        window.location.href = 'loginregister.html';
+                    }
+                });
+            });
+
+            // Initialize page
+            if (checkAuth()) {
+                loadUserProfile();
+            }
+        });
+    </script>
+</body>
+</html>
