@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  const adminToken = sessionStorage.getItem('authToken');
 
   function requireAdmin() {
         const userId = sessionStorage.getItem('userId');

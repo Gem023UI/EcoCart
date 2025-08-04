@@ -1,4 +1,39 @@
 document.addEventListener("DOMContentLoaded", async () => {
+  // Verify login and admin access
+  const token = sessionStorage.getItem('authToken');
+  const userRole = sessionStorage.getItem('roleId');
+
+  if (!token) {
+    Swal.fire({
+      title: 'Access Denied',
+      text: 'Please login to access the admin dashboard',
+      icon: 'error',
+      confirmButtonText: 'Go to Login',
+      allowOutsideClick: false,
+      allowEscapeKey: false
+    }).then(() => {
+      window.location.href = '/login.html';
+    });
+    return;
+  }
+  
+  if (userRole !== '1') {
+    Swal.fire({
+      title: 'Access Denied', 
+      text: 'Administrator privileges required to access this page',
+      icon: 'error',
+      confirmButtonText: 'OK',
+      allowOutsideClick: false,
+      allowEscapeKey: false
+    }).then(() => {
+      window.location.href = 'loginregister.html';
+    });
+    return;
+  }
+  console.log('Admin access verified, loading dashboard...');
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
   try {
     console.log('Loading enhanced dashboard data...');
 
