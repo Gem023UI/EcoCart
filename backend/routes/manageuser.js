@@ -10,10 +10,10 @@ const {
 console.log('User routes being registered...');
 
 // User Management Routes
-router.get('/userTable', getAllUsers);
-router.get('/userEdit/:id', getUserById);
-router.put('/userUpdate/:id', updateUserById);
-router.delete('/userDelete/:id', deleteUserById);
+router.get('/userTable', verifyAdmin, getAllUsers);
+router.get('/userEdit/:id', verifyAdmin, getUserById);
+router.put('/userUpdate/:id', verifyAdmin, updateUserById);
+router.delete('/userDelete/:id', verifyAdmin, deleteUserById);
 
 console.log('User routes registered successfully');
 

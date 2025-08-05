@@ -1,3 +1,4 @@
+
 $(document).ready(function () {
     const url = 'http://localhost:4000/'
 
@@ -155,10 +156,18 @@ $(document).ready(function () {
                 // Also store userId and roleId for reference
                 sessionStorage.setItem('userId', data.user.userId);
                 sessionStorage.setItem('roleId', data.user.roleId);
+                sessionStorage.setItem('status', data.user.statusId);
             }
 
             // Check user role and redirect accordingly
-            if (data.user.roleId === 2) {
+            if (data.user.statusId === 2) {
+                Swal.fire({
+                    icon: "error",
+                    text: "Your account has been deactivated. Please contact support.",
+                    position: 'center'
+                });
+                return; // Prevent further execution
+            } else if (data.user.roleId === 2) {
                 window.location.href = 'landingpage.html'; // Customer
             } else if (data.user.roleId === 1) {
                 window.location.href = 'dashboard.html'; // Admin

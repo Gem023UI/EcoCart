@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       allowOutsideClick: false,
       allowEscapeKey: false
     }).then(() => {
-      window.location.href = '/login.html';
+      window.location.href = 'loginregister.html';
     });
     return;
   }

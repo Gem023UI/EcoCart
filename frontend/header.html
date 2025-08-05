@@ -5,49 +5,83 @@
         <a href="./landingpage.html">
           <img src="./assets/Poppins-removebg-preview.png" alt="EcoCart Logo" class="logo-image">
         </a>
-      </div>>
+      </div>
       <div class="search-bar">
         <h4 class="logo-text">Welcome, Customers!</h4>
       </div>
     <nav class="icons">
         <a href="./cart.html" class="cart-icon"><i class="fa-solid fa-cart-shopping"></i></a>
         <div class="user-dropdown">
-          <a href="#" class="user-icon"><i class="fa-solid fa-circle-user"></i></i></a>
+          <a href="#" class="user-icon"><i class="fa-solid fa-circle-user"></i></a>
           <div class="user-dropdown-content">
             <a href="./userprofile.html">Profile</a>
             <a href="./orderhistory.html">Orders</a>
-            <a href="./landingpage.html">Logout</a>
+            <a href="#" id="logout-btn">Logout</a>
           </div>
         </div>
       </nav>
     </nav>
 
     <script>
-      // User Options @ Hover
-    const userIcon = document.querySelector('.user-icon');
-    const userDropdownContent = document.querySelector('.user-dropdown-content');
-
-    userIcon.addEventListener('click', (e) => {
-      e.preventDefault();
-      userDropdownContent.classList.toggle('show');
-    });
-
-    // Close dropdown when clicking outside
-    window.addEventListener('click', function(e) {
-      if (!e.target.closest('.user-dropdown')) {
-        userDropdownContent.classList.remove('show');
+      // Logout function
+      function logout() {
+        try {
+          // Clear all sessionStorage data
+          sessionStorage.clear();
+          
+          // Optional: You can also clear specific items if needed
+          // sessionStorage.removeItem('userToken');
+          // sessionStorage.removeItem('userId');
+          // sessionStorage.removeItem('userEmail');
+          
+          // Optional: Clear localStorage as well if your app uses it
+          // localStorage.clear();
+          
+          // Show confirmation (optional)
+          console.log('User logged out successfully');
+          
+          // Redirect to landing page
+          window.location.href = './landingpage.html';
+          
+        } catch (error) {
+          console.error('Error during logout:', error);
+          // Still redirect even if there's an error clearing storage
+          window.location.href = './landingpage.html';
+        }
       }
-    });
 
-    // Ensure Bootstrap components are properly initialized
-    $(document).ready(function() {
-      // Initialize tooltips if needed
-      $('[data-toggle="tooltip"]').tooltip();
-      
-      // Ensure modal backdrop clicks work properly
-      $(document).on('click', '.modal-backdrop', function() {
-        $('.modal').modal('hide');
+      // User Options @ Hover  
+      const userIcon = document.querySelector('.user-icon');
+      const userDropdownContent = document.querySelector('.user-dropdown-content');
+      const logoutBtn = document.getElementById('logout-btn');
+
+      userIcon.addEventListener('click', (e) => {
+        e.preventDefault();
+        userDropdownContent.classList.toggle('show');
       });
-    });
+
+      // Add logout functionality
+      logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+
+      // Close dropdown when clicking outside
+      window.addEventListener('click', function(e) {
+        if (!e.target.closest('.user-dropdown')) {
+          userDropdownContent.classList.remove('show');
+        }
+      });
+
+      // Ensure Bootstrap components are properly initialized
+      $(document).ready(function() {
+        // Initialize tooltips if needed
+        $('[data-toggle="tooltip"]').tooltip();
+        
+        // Ensure modal backdrop clicks work properly
+        $(document).on('click', '.modal-backdrop', function() {
+          $('.modal').modal('hide');
+        });
+      });
     </script>
 </header>

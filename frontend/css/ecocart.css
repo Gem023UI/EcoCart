@@ -1,0 +1,209 @@
+/* Landing Page Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins';
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Background Image - Fixed Position */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../assets/background2.jpg'); /* Change this path to your background image */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    z-index: -1;
+}
+
+.landing-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+.main-content {
+    text-align: center;
+    z-index: 1;
+}
+
+/* Logo Image Animation */
+.logo-image {
+    width: 100px;
+    height: 100px;
+    transform: translateY(-30px);
+    animation: fadeInFloat 1.2s ease-out forwards;
+    animation-delay: 0.2s;
+    padding: 5px;
+
+}
+
+/* Main Title Styling */
+.main-title {
+    font-size: 200px;
+    font-weight: 200;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Individual Letter Animation */
+.letter {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: letterFloat 0.8s ease-out forwards;
+}
+
+/* Staggered animation delay for each letter */
+.letter:nth-child(1) { animation-delay: 0.5s; }
+.letter:nth-child(2) { animation-delay: 0.6s; }
+.letter:nth-child(3) { animation-delay: 0.7s; }
+.letter:nth-child(4) { animation-delay: 0.8s; }
+.letter:nth-child(5) { animation-delay: 0.9s; }
+.letter:nth-child(6) { animation-delay: 1.0s; }
+.letter:nth-child(7) { animation-delay: 1.1s; }
+
+/* Button Container */
+.button-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInFloat 1s ease-out forwards;
+    animation-delay: 1.5s;
+}
+
+/* Button Styling */
+.landing-btn {
+    display: inline-block;
+    padding: 15px 30px;
+    font-family: 'Poppins', Arial, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    min-width: 150px;
+    text-align: center;
+}
+
+/* Primary Button */
+.primary-btn {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    color: white;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+.primary-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.6);
+    background: linear-gradient(45deg, #45a049, #4CAF50);
+}
+
+/* Secondary Button */
+.secondary-btn {
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.secondary-btn:hover {
+    transform: translateY(-3px);
+    background: white;
+    color: #667eea;
+    box-shadow: 0 8px 25px rgba(255, 255, 255, 0.4);
+}
+
+/* Keyframe Animations */
+@keyframes fadeInFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes letterFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) rotateX(90deg);
+    }
+    50% {
+        transform: translateY(-10px) rotateX(0deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-title {
+        font-size: 3.5rem;
+    }
+    
+    .logo-image {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .button-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .landing-btn {
+        width: 200px;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 2.5rem;
+    }
+    
+    .logo-image {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+/* Additional floating animation for subtle movement */
+.main-content {
+    animation: subtleFloat 6s ease-in-out infinite;
+}
+
+@keyframes subtleFloat {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}

@@ -44,8 +44,8 @@ const fileFilter = (req, file, cb) => {
     next();
   });
 
-  router.get('/productTable/', productController.getAllProducts);
-  router.get('/productFetch/:id', productController.getSingleProduct);
+  router.get('/productTable/', verifyAdmin, productController.getAllProducts);
+  router.get('/productFetch/:id', verifyAdmin, productController.getSingleProduct);
 
   router.post('/productAdd/', (req, res, next) => {
     upload.array('productImageFiles', 10)(req, res, (err) => {
@@ -61,8 +61,8 @@ const fileFilter = (req, file, cb) => {
     });
   }, productController.updateProduct);
 
-  router.delete('/productDelete/:id', productController.deleteProduct);
-  router.delete('/image/:imageId', productController.deleteProductImage);
+  router.delete('/productDelete/:id', verifyAdmin, productController.deleteProduct);
+  router.delete('/image/:imageId', verifyAdmin, productController.deleteProductImage);
 
   function handleMulterError(err, res) {
     console.error('Multer error:', err);

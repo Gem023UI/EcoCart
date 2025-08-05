@@ -14,6 +14,6 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.get('/user-profile', verifyCustomer, getUserProfile); // New route to get profile
 router.post('/update-profile', verifyCustomer, updateUser);
-router.delete('/deactivate', deactivateUser);
+router.delete('/deactivate', verifyCustomer, deactivateUser);
 
 module.exports = router;
