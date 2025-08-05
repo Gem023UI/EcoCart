@@ -55,19 +55,16 @@ $(document).ready(function () {
         ajax: {
             url: `${url}api/v1/productTable/`,
             dataSrc: "rows",
+            beforeSend: function(xhr) {
+                const authToken = sessionStorage.getItem('authToken');
+                if (authToken) {
+                    xhr.setRequestHeader('Authorization', `Bearer ${authToken}`);
+                }
+            },
             error: function(xhr, error, code) {
                 console.error('DataTable AJAX error:', error, code);
-                if (xhr.status === 401) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Session Expired',
-                        text: 'Your session has expired. Please log in again.',
-                        showConfirmButton: true
-                    }).then(() => {
-                        sessionStorage.clear();
-                        window.location.href = 'loginregister.html';
-                    });
-                }
+                // Simple error handling without session expiry logic
+                showAlert('error', 'Failed to load product data. Please refresh the page.');
             }
         },
         processing: false,
@@ -134,32 +131,6 @@ $(document).ready(function () {
         $('#searchProduct').val('');
         table.search('').columns().search('').draw();
     });
-
-    // Helper function to get auth headers
-    function getAuthHeaders() {
-        const authToken = sessionStorage.getItem('authToken');
-        return {
-            'Authorization': `Bearer ${authToken}`,
-            'Content-Type': 'application/json'
-        };
-    }
-
-    // Helper function to handle authentication errors
-    function handleAuthError(xhr) {
-        if (xhr.status === 401 || xhr.status === 403) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Session Expired',
-                text: 'Your session has expired. Please log in again.',
-                showConfirmButton: true
-            }).then(() => {
-                sessionStorage.clear();
-                window.location.href = 'loginregister.html';
-            });
-            return true;
-        }
-        return false;
-    }
 
     $("#productSubmit").on('click', function (e) {
         e.preventDefault();

@@ -6,6 +6,8 @@ const {
     updateUserById,
     deleteUserById
 } = require('../controllers/manageuser');
+const { verifyAdmin } = require('../middleware/auth');
+
 
 console.log('User routes being registered...');
 

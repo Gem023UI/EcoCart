@@ -3,6 +3,8 @@
   const path = require('path');
   const fs = require('fs');
   const router = express.Router();
+  const { verifyAdmin } = require('../middleware/auth');
+
 
   const productController = require('../controllers/manageproduct');
 
